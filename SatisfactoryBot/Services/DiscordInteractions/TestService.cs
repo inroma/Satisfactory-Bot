@@ -1,7 +1,10 @@
-﻿namespace SatisfactoryBot.Services;
+﻿namespace SatisfactoryBot.Services.DiscordInteractions;
 
 using Discord.Interactions;
+using MediatR;
 using Microsoft.Extensions.Logging;
+using SatisfactoryBot.Application.Domain.GetHealth;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 public class TestService : InteractionModuleBase<SocketInteractionContext>
@@ -9,14 +12,16 @@ public class TestService : InteractionModuleBase<SocketInteractionContext>
     #region Private Properties
 
     private readonly ILogger<TestService> logger;
+    private readonly ISender mediatr;
 
     #endregion Private Properties
 
     #region Public Constructor
 
-    public TestService(ILogger<TestService> logger)
+    public TestService(ILogger<TestService> logger, ISender sender)
     {
         this.logger = logger;
+        mediatr = sender;
     }
 
     #endregion Public Constructor
@@ -32,4 +37,20 @@ public class TestService : InteractionModuleBase<SocketInteractionContext>
     [SlashCommand("ping", "Pings the bot and returns its latency.")]
     public async Task GreetUserAsync()
         => await RespondAsync(text: $":ping_pong: It took me {Context.Client.Latency}ms to respond to you!", ephemeral: true);
+
+    [SlashCommand("health", "Get server health")]
+    public async Task Health(string url, string token)
+    {
+        logger.LogInformation("GetHealth command started");
+        try
+        {
+            var result = await mediatr.Send(new GetHealthGuery(url, token));
+
+            await RespondAsync(JsonSerializer.Serialize(result), ephemeral: true);
+        }
+        catch (Exception ex)
+        {
+            await RespondAsync("Error getting server Health", ephemeral: true);
+        }
+    }
 }
