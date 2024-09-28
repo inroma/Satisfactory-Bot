@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using SatisfactoryBot.Data;
@@ -11,9 +12,11 @@ using SatisfactoryBot.Data;
 namespace SatisfactoryBot.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240928174955_discordGuildId")]
+    partial class discordGuildId
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -62,6 +65,21 @@ namespace SatisfactoryBot.Data.Migrations
                     b.ToTable("DiscordServer");
                 });
 
+            modelBuilder.Entity("SatisfactoryBot.Data.Models.Relations.SatisfactoryToDiscord", b =>
+                {
+                    b.Property<int>("DiscordServerId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("SatisfactoryServerId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("DiscordServerId", "SatisfactoryServerId");
+
+                    b.HasIndex("SatisfactoryServerId");
+
+                    b.ToTable("SatisfactoryToDiscord");
+                });
+
             modelBuilder.Entity("SatisfactoryBot.Data.Models.SatisfactoryServer", b =>
                 {
                     b.Property<int>("Id")
@@ -73,9 +91,6 @@ namespace SatisfactoryBot.Data.Migrations
                     b.Property<DateTime>("CreationTime")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone");
-
-                    b.Property<int>("DiscordServerId")
-                        .HasColumnType("integer");
 
                     b.Property<string>("Name")
                         .HasColumnType("text");
@@ -92,8 +107,6 @@ namespace SatisfactoryBot.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("DiscordServerId");
-
                     b.ToTable("SatisfactoryServer");
                 });
 
@@ -108,22 +121,24 @@ namespace SatisfactoryBot.Data.Migrations
                     b.Navigation("DiscordServer");
                 });
 
-            modelBuilder.Entity("SatisfactoryBot.Data.Models.SatisfactoryServer", b =>
+            modelBuilder.Entity("SatisfactoryBot.Data.Models.Relations.SatisfactoryToDiscord", b =>
                 {
-                    b.HasOne("SatisfactoryBot.Data.Models.DiscordServer", "DiscordServer")
-                        .WithMany("SatisfactoryServers")
+                    b.HasOne("SatisfactoryBot.Data.Models.DiscordServer", null)
+                        .WithMany()
                         .HasForeignKey("DiscordServerId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("DiscordServer");
+                    b.HasOne("SatisfactoryBot.Data.Models.SatisfactoryServer", null)
+                        .WithMany()
+                        .HasForeignKey("SatisfactoryServerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("SatisfactoryBot.Data.Models.DiscordServer", b =>
                 {
                     b.Navigation("DiscordRoles");
-
-                    b.Navigation("SatisfactoryServers");
                 });
 #pragma warning restore 612, 618
         }

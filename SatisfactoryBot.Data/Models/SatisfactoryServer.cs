@@ -13,5 +13,7 @@ public class SatisfactoryServer : BaseModel
 
     public string Token { get; set; }
 
-    public virtual ICollection<DiscordServer> DiscordServers { get; set; }
+    public int DiscordServerId { get; set; }
+
+    public virtual DiscordServer DiscordServer { get; set; }
 }

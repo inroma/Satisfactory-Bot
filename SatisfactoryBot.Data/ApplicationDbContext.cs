@@ -2,7 +2,6 @@
 
 using Microsoft.EntityFrameworkCore;
 using SatisfactoryBot.Data.Models;
-using SatisfactoryBot.Data.Models.Relations;
 
 public class ApplicationDbContext : DbContext
 {
@@ -16,10 +15,11 @@ public class ApplicationDbContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
-        builder.Entity<SatisfactoryServer>()
-            .HasMany(a => a.DiscordServers)
-            .WithMany(t => t.SatisfactoryServers)
-            .UsingEntity<SatisfactoryToDiscord>();
+        builder.Entity<DiscordServer>()
+            .HasMany(a => a.SatisfactoryServers)
+            .WithOne(t => t.DiscordServer)
+            .HasForeignKey(a => a.DiscordServerId)
+            .OnDelete(DeleteBehavior.Cascade);
 
         builder.Entity<DiscordRole>()
             .HasOne(a => a.DiscordServer)
