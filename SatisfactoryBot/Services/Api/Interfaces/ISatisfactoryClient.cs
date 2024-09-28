@@ -6,5 +6,11 @@ using System.Threading.Tasks;
 
 public interface ISatisfactoryClient
 {
-    Task<BaseBody<HealthResponse>> GetHealth();
+    Task<BaseResponse<HealthResponse>> GetHealth();
+
+    Task<BaseResponse<AuthResponse>> PasswordLessLogin();
+
+    Task<bool> VerifyAuthenticationToken();
+
+    Task<BaseResponse<AuthResponse>> PasswordLogin(string password);
 }
