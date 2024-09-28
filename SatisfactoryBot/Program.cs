@@ -18,7 +18,6 @@ internal class Program
 {
     static void Main(string[] args)
     {
-        Console.WriteLine("Hello, World!");
         Host.CreateDefaultBuilder(args).ConfigureServices((ctxc, services) => {
             var configuration = MapSettings(ctxc);
             ConfigureServices(services, configuration);
@@ -37,7 +36,7 @@ internal class Program
         };
 
         services.Configure<GlobalSettings>(configuration)
-            .AddDbContext<ApplicationDbContext>(options => options.UseNpgsql(configuration.GetConnectionString("Database")))
+            .AddDbContext<ApplicationDbContext>(options => options.UseNpgsql(configuration.GetConnectionString("Database")).UseLazyLoadingProxies())
             .AddScoped<IUnitOfWork<ApplicationDbContext>, UnitOfWork<ApplicationDbContext>>()
             .AddSingleton(config)
             .AddSingleton<DiscordSocketClient>()
