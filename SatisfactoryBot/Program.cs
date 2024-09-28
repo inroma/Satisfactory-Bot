@@ -8,11 +8,11 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using SatisfactoryBot.Data;
 using SatisfactoryBot.BackgroundServices;
-using SatisfactoryBot.Settings;
 using System.Reflection;
 using Microsoft.Extensions.Logging;
 using NLog.Extensions.Logging;
 using SatisfactoryBot.Data.UnitOfWork;
+using SatisfactoryBot.Models.Settings;
 
 internal class Program
 {

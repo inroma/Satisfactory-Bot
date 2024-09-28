@@ -1,4 +1,4 @@
-﻿namespace SatisfactoryBot.Settings;
+﻿namespace SatisfactoryBot.Models.Settings;
 
 public class DiscordSettings
 {

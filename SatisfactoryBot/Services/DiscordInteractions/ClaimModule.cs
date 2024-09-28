@@ -3,10 +3,12 @@
 using Discord.Interactions;
 using MediatR;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using SatisfactoryBot.Application.Domain.ClaimSatisfactoryServer;
 using SatisfactoryBot.Helpers;
 using SatisfactoryBot.Models.Enums;
 using SatisfactoryBot.Models.Modals;
+using SatisfactoryBot.Models.Settings;
 
 public partial class ClaimModule : InteractionModuleBase<SocketInteractionContext>
 {
@@ -14,15 +16,17 @@ public partial class ClaimModule : InteractionModuleBase<SocketInteractionContex
 
     private readonly ILogger<ClaimModule> logger;
     private readonly ISender mediatr;
+    private readonly GlobalSettings globalSettings;
 
     #endregion Private Properties
 
     #region Public Constructor
 
-    public ClaimModule(ILogger<ClaimModule> logger, ISender sender)
+    public ClaimModule(ILogger<ClaimModule> logger, ISender sender, IOptions<GlobalSettings> options)
     {
         this.logger = logger;
         mediatr = sender;
+        globalSettings = options.Value;
     }
 
     #endregion Public Constructor
@@ -54,14 +58,14 @@ public partial class ClaimModule : InteractionModuleBase<SocketInteractionContex
     public async Task StartClaiming(ClaimModal claim)
     {
         logger.LogInformation("{User} confirmed claim", Context.User.Id);
-        if (RegexHelper.LocalIpRegex().IsMatch(claim.Url))
+        if (!globalSettings.EnableLocalIPs && RegexHelper.LocalIpRegex().IsMatch(claim.Url))
         {
-            await RespondAsync("Server address cannot be a local IP");
+            await RespondAsync("Server address cannot be a local IP, you can enable it in the bot config file");
             return;
         }
         try
         {
-            var result = await mediatr.Send(new ClaimSatisfactoryServerCommand(claim.Url, claim.Password, claim.Token, Context.User.Id));
+            var result = await mediatr.Send(new ClaimSatisfactoryServerCommand(claim.Url, claim.Password, claim.Token, Context.Guild.Id, Context.User.Id));
             await RespondAsync(result ? "Server claimed successfully !" : "Error claiming the server");
         }
         catch (Exception e)
