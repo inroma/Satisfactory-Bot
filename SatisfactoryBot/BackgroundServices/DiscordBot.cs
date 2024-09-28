@@ -3,12 +3,12 @@
 using Discord.Interactions;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using SatisfactoryBot.Settings;
 using Discord;
 using Discord.WebSocket;
 using System.Reflection;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
+using SatisfactoryBot.Models.Settings;
 
 public class DiscordBot : BackgroundService
 {
