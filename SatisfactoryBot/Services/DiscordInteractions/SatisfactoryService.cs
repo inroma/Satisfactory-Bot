@@ -8,18 +8,18 @@ using SatisfactoryBot.Application.Domain.GetState;
 using System.Text.Json;
 using System.Threading.Tasks;
 
-public class TestService : InteractionModuleBase<SocketInteractionContext>
+public class SatisfactoryService : InteractionModuleBase<SocketInteractionContext>
 {
     #region Private Properties
 
-    private readonly ILogger<TestService> logger;
+    private readonly ILogger<SatisfactoryService> logger;
     private readonly ISender mediatr;
 
     #endregion Private Properties
 
     #region Public Constructor
 
-    public TestService(ILogger<TestService> logger, ISender sender)
+    public SatisfactoryService(ILogger<SatisfactoryService> logger, ISender sender)
     {
         this.logger = logger;
         mediatr = sender;
@@ -55,6 +55,7 @@ public class TestService : InteractionModuleBase<SocketInteractionContext>
         }
         catch (Exception ex)
         {
+            logger.LogError(ex, "Error getting server State: {Ex}", ex.Message);
             await RespondAsync("Error getting server State", ephemeral: true);
         }
     }
