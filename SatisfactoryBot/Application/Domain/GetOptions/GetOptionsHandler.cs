@@ -2,10 +2,7 @@
 
 using MediatR;
 using Microsoft.Extensions.Logging;
-using SatisfactoryBot.Data;
-using SatisfactoryBot.Data.Models;
-using SatisfactoryBot.Data.Repositories;
-using SatisfactoryBot.Data.UnitOfWork;
+using SatisfactoryBot.Data.Repositories.Interfaces;
 using SatisfactoryBot.Services.Api;
 using SatisfactoryBot.Services.Api.Interfaces;
 using SatisfactoryBot.Services.Api.Models;
@@ -19,13 +16,13 @@ internal class GetOptionsHandler : IRequestHandler<GetOptionsQuery, BaseResponse
     
     private readonly ILogger<GetOptionsHandler> logger;
     private ISatisfactoryClient client;
-    private readonly DiscordServerRepository discordRepository;
+    private readonly IDiscordServerRepository discordRepository;
 
     #endregion Private Properties
 
     #region Public Constructor
 
-    public GetOptionsHandler(ILogger<GetOptionsHandler> logger, DiscordServerRepository discordServerRepository)
+    public GetOptionsHandler(ILogger<GetOptionsHandler> logger, IDiscordServerRepository discordServerRepository)
     {
         this.logger = logger;
         discordRepository = discordServerRepository;
