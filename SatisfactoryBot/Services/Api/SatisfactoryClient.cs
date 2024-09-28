@@ -86,6 +86,18 @@ public class SatisfactoryClient : ISatisfactoryClient
         return result;
     }
 
+    public async Task<BaseResponse<OptionsResponse>> GetOptions()
+    {
+        var body = new BaseRequest<object>("GetServerOptions");
+        var request = new RestRequest().AddBody(body);
+        var result = await client.PostAsync<BaseResponse<OptionsResponse>>(request);
+        if (!string.IsNullOrEmpty(result.ErrorCode))
+        {
+            throw new Exception($"{result.ErrorCode}{(string.IsNullOrEmpty(result.ErrorMessage) ? Environment.NewLine : "")}{result.ErrorMessage}");
+        }
+        return result;
+    }
+
     private static BaseResponse<T> CheckResponse<T>(BaseResponse<T> baseResponse) where T : new()
     {
         if (!string.IsNullOrEmpty(baseResponse.ErrorCode))
