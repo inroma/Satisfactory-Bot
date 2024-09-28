@@ -3,6 +3,7 @@
 using MediatR;
 using Microsoft.Extensions.Logging;
 using SatisfactoryBot.Services.Api;
+using SatisfactoryBot.Services.Api.Interfaces;
 using SatisfactoryBot.Services.Api.Models;
 using SatisfactoryBot.Services.Api.Models.Responses;
 using System.Threading;
@@ -11,6 +12,7 @@ using System.Threading.Tasks;
 internal class GetStateHandler : IRequestHandler<GetStateQuery, BaseBody<StateResponse>>
 {
     private readonly ILogger<GetStateHandler> logger;
+    private ISatisfactoryClient client;
 
     public GetStateHandler(ILogger<GetStateHandler> logger)
     {
@@ -21,7 +23,7 @@ internal class GetStateHandler : IRequestHandler<GetStateQuery, BaseBody<StateRe
     {
         logger.LogInformation("Retrieving server state");
 
-        var client = new SatisfactoryClient(request.Url, request.Token);
+        client = new SatisfactoryClient(request.Url, request.Token);
 
         return await client.GetState();
     }
