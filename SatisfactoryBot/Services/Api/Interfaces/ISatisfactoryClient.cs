@@ -17,4 +17,6 @@ public interface ISatisfactoryClient
     Task<BaseResponse<StateResponse>> GetState();
 
     Task<BaseResponse<OptionsResponse>> GetOptions();
+
+    Task<BaseResponse<AdvancedGameSettingsResponse>> GetAdvancedGameSettings();
 }

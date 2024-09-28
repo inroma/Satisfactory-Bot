@@ -3,6 +3,7 @@
 using Discord.Interactions;
 using MediatR;
 using Microsoft.Extensions.Logging;
+using SatisfactoryBot.Application.Domain.GetAdvancedGameSettings;
 using SatisfactoryBot.Application.Domain.GetHealth;
 using SatisfactoryBot.Application.Domain.GetOptions;
 using SatisfactoryBot.Application.Domain.GetState;
@@ -40,6 +41,7 @@ public class SatisfactoryService : InteractionModuleBase<SocketInteractionContex
         }
         catch (Exception ex)
         {
+            logger.LogError(ex, "Error getting server Health: {Ex}", ex.Message);
             await RespondAsync("Error getting server Health", ephemeral: true);
         }
     }
@@ -75,6 +77,24 @@ public class SatisfactoryService : InteractionModuleBase<SocketInteractionContex
         {
             logger.LogError(ex, "Error getting server Options: {Ex}", ex.Message);
             await RespondAsync("Error getting server Options", ephemeral: true);
+        }
+    }
+
+
+    [SlashCommand("asettings", "Get advanced game settings")]
+    public async Task AdvancedGameSettings()
+    {
+        logger.LogInformation("AdvancedGameSettings command started");
+        try
+        {
+            var result = await mediatr.Send(new GetAdvancedGameSettingsQuery(Context.Guild.Id));
+
+            await RespondAsync(JsonSerializer.Serialize(result));
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error getting advanced game settings: {Ex}", ex.Message);
+            await RespondAsync("Error getting advanced game settings", ephemeral: true);
         }
     }
 }

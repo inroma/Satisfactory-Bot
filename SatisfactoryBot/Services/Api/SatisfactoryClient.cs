@@ -99,6 +99,16 @@ public class SatisfactoryClient : ISatisfactoryClient
         return result;
     }
 
+    public async Task<BaseResponse<AdvancedGameSettingsResponse>> GetAdvancedGameSettings()
+    {
+        var body = new BaseRequest<object>("GetAdvancedGameSettings");
+        var request = new RestRequest().AddBody(body);
+        var result = await client.PostAsync<BaseResponse<AdvancedGameSettingsResponse>>(request);
+        CheckResponse(result);
+        return result;
+    }
+
+
     private static BaseResponse<T> CheckResponse<T>(BaseResponse<T> baseResponse) where T : new()
     {
         if (!string.IsNullOrEmpty(baseResponse.ErrorCode))
