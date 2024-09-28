@@ -13,6 +13,7 @@ using Microsoft.Extensions.Logging;
 using NLog.Extensions.Logging;
 using SatisfactoryBot.Data.UnitOfWork;
 using SatisfactoryBot.Models.Settings;
+using SatisfactoryBot.Extensions;
 
 internal class Program
 {
@@ -41,6 +42,7 @@ internal class Program
             .AddSingleton(config)
             .AddSingleton<DiscordSocketClient>()
             .AddHostedService<DiscordBot>()
+            .AddRepositories()
             .AddLogging(loggingBuilder =>
             {
                 // configure Logging with NLog
