@@ -27,18 +27,6 @@ public class TestService : InteractionModuleBase<SocketInteractionContext>
 
     #endregion Public Constructor
 
-    [SlashCommand("echo", "Repeat the input")]
-    public async Task Echo(string echo, [Summary(description: "mention the user")] bool mention = false)
-    {
-        logger.LogInformation("echo command received");
-        await RespondAsync(echo + (mention ? Context.User.Mention : string.Empty));
-        logger.LogInformation("echo command responded");
-    }
-
-    [SlashCommand("ping", "Pings the bot and returns its latency.")]
-    public async Task GreetUserAsync()
-        => await RespondAsync(text: $":ping_pong: It took me {Context.Client.Latency}ms to respond to you!", ephemeral: true);
-
     [SlashCommand("health", "Get server health")]
     public async Task Health(string url, string token)
     {
