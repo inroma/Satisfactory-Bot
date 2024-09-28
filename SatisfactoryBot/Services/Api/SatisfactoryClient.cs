@@ -36,14 +36,7 @@ public class SatisfactoryClient : ISatisfactoryClient
 
     #endregion Public Constructor
 
-    public async Task<BaseResponse<HealthResponse>> GetHealth()
-    {
-        var body = new BaseRequest<HealthRequest>("HealthCheck");
-        var request = new RestRequest().AddBody(body);
-        var result = await client.PostAsync<BaseResponse<HealthResponse>>(request);
-        CheckResponse(result);
-        return result;
-    }
+    #region Auth
 
     public async Task<BaseResponse<AuthResponse>> PasswordLessLogin()
     {
@@ -76,7 +69,18 @@ public class SatisfactoryClient : ISatisfactoryClient
         }
         return true;
     }
-    
+
+    #endregion Auth
+
+    public async Task<BaseResponse<HealthResponse>> GetHealth()
+    {
+        var body = new BaseRequest<HealthRequest>("HealthCheck");
+        var request = new RestRequest().AddBody(body);
+        var result = await client.PostAsync<BaseResponse<HealthResponse>>(request);
+        CheckResponse(result);
+        return result;
+    }
+
     public async Task<BaseResponse<StateResponse>> GetState()
     {
         var body = new BaseRequest<object>("QueryServerState");
