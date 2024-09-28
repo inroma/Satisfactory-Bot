@@ -44,12 +44,15 @@ public class ClaimSatisfactoryServerHandler : IRequestHandler<ClaimSatisfactoryS
         }
         if (request.Token != null)
         {
+            var discordServer = GetOrCreateDiscordServer(request.GuildId);
             var satServer = new SatisfactoryServer()
             {
                 Owner = request.UserId,
                 Token = request.Token,
                 Url = request.Url,
+                DiscordServer = discordServer
             };
+
             unitOfWork.GetRepository<SatisfactoryServer>().Add(satServer);
             var result = unitOfWork.Save();
             return await Task.FromResult(result > 0);
@@ -67,10 +70,6 @@ public class ClaimSatisfactoryServerHandler : IRequestHandler<ClaimSatisfactoryS
     {
         client = new SatisfactoryClient(url);
         var result = await client.PasswordLessLogin();
-        if (!string.IsNullOrEmpty(result.ErrorCode))
-        {
-            throw new Exception($"{result.ErrorCode}{(string.IsNullOrEmpty(result.ErrorMessage) ? Environment.NewLine : "")}{result.ErrorMessage}");
-        }
         return result.Data;
     }
 
@@ -78,10 +77,21 @@ public class ClaimSatisfactoryServerHandler : IRequestHandler<ClaimSatisfactoryS
     {
         client = new SatisfactoryClient(url);
         var result = await client.PasswordLogin(password);
-        if (!string.IsNullOrEmpty(result.ErrorCode))
-        {
-            throw new Exception($"{result.ErrorCode}{(string.IsNullOrEmpty(result.ErrorMessage) ? Environment.NewLine : "")}{result.ErrorMessage}");
-        }
         return result.Data;
+    }
+
+    private DiscordServer GetOrCreateDiscordServer(ulong guildId)
+    {
+        var discordRepository = unitOfWork.GetRepository<DiscordServer>();
+        var discordServer = discordRepository.GetFirstOrDefault(d => d.GuildId == guildId);
+        if (discordServer == null)
+        {
+            discordServer = new DiscordServer()
+            {
+                GuildId = guildId
+            };
+            discordRepository.Add(discordServer);
+        }
+        return discordServer;
     }
 }
