@@ -7,5 +7,5 @@ using SatisfactoryBot.Data.Repositories.Interfaces;
 internal static class IServiceCollectionExtensions
 {
     internal static IServiceCollection AddRepositories(this IServiceCollection services) =>
-        services.AddScoped<IDiscordServerRepository, DiscordServerRepository>();
+        services.AddTransient<IDiscordServerRepository, DiscordServerRepository>();
 }

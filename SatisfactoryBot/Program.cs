@@ -38,11 +38,11 @@ internal class Program
 
         services.Configure<GlobalSettings>(configuration)
             .AddDbContext<ApplicationDbContext>(options => options.UseNpgsql(configuration.GetConnectionString("Database")).UseLazyLoadingProxies())
-            .AddScoped<IUnitOfWork<ApplicationDbContext>, UnitOfWork<ApplicationDbContext>>()
+            .AddTransient<IUnitOfWork<ApplicationDbContext>, UnitOfWork<ApplicationDbContext>>()
+            .AddRepositories()
             .AddSingleton(config)
             .AddSingleton<DiscordSocketClient>()
             .AddHostedService<DiscordBot>()
-            .AddRepositories()
             .AddLogging(loggingBuilder =>
             {
                 // configure Logging with NLog
