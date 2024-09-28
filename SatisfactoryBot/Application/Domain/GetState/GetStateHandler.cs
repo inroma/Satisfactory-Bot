@@ -9,7 +9,7 @@ using SatisfactoryBot.Services.Api.Models.Responses;
 using System.Threading;
 using System.Threading.Tasks;
 
-internal class GetStateHandler : IRequestHandler<GetStateQuery, BaseBody<StateResponse>>
+internal class GetStateHandler : IRequestHandler<GetStateQuery, BaseResponse<StateResponse>>
 {
     private readonly ILogger<GetStateHandler> logger;
     private ISatisfactoryClient client;
@@ -19,7 +19,7 @@ internal class GetStateHandler : IRequestHandler<GetStateQuery, BaseBody<StateRe
         this.logger = logger;
     }
 
-    public async Task<BaseBody<StateResponse>> Handle(GetStateQuery request, CancellationToken cancellationToken)
+    public async Task<BaseResponse<StateResponse>> Handle(GetStateQuery request, CancellationToken cancellationToken)
     {
         logger.LogInformation("Retrieving server state");
 

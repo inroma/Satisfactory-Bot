@@ -40,27 +40,35 @@ public class SatisfactoryClient : ISatisfactoryClient
     {
         var body = new BaseRequest<HealthRequest>("HealthCheck");
         var request = new RestRequest().AddBody(body);
-        return await client.PostAsync<BaseResponse<HealthResponse>>(request);
+        var result = await client.PostAsync<BaseResponse<HealthResponse>>(request);
+        CheckResponse(result);
+        return result;
     }
 
     public async Task<BaseResponse<AuthResponse>> PasswordLessLogin()
     {
         var body = new BaseRequest<PasswordLessLoginRequest>("PasswordlessLogin");
         var request = new RestRequest().AddBody(body);
-        return await client.PostAsync<BaseResponse<AuthResponse>>(request);
+        var result = await client.PostAsync<BaseResponse<AuthResponse>>(request);
+        CheckResponse(result);
+        return result;
     }
 
     public async Task<BaseResponse<AuthResponse>> PasswordLogin(string password)
     {
         var body = new BaseRequest<PasswordLoginRequest>("PasswordLogin");
         var request = new RestRequest().AddBody(body);
-        return await client.PostAsync<BaseResponse<AuthResponse>>(request);
+        var result = await client.PostAsync<BaseResponse<AuthResponse>>(request);
+        CheckResponse(result);
+        return result;
     }
 
     public async Task<bool> VerifyAuthenticationToken()
     {
-        var request = new RestRequest();
+        var body = new BaseRequest<object>("VerifyAuthenticationToken");
+        var request = new RestRequest().AddBody(body);
         var result = await client.PostAsync(request);
+        //CheckResponse(result.Data);
         // Api returns NoContent on token auth success
         if (result.StatusCode != System.Net.HttpStatusCode.NoContent)
         {
@@ -69,10 +77,21 @@ public class SatisfactoryClient : ISatisfactoryClient
         return true;
     }
     
-    public async Task<BaseBody<StateResponse>> GetState()
+    public async Task<BaseResponse<StateResponse>> GetState()
     {
         var body = new BaseRequest<object>("QueryServerState");
-        var request = new RestRequest().AddBody(System.Text.Json.JsonSerializer.Serialize(body));
-        return await client.PostAsync<BaseBody<StateResponse>>(request);
+        var request = new RestRequest().AddBody(body);
+        var result = await client.PostAsync<BaseResponse<StateResponse>>(request);
+        CheckResponse(result);
+        return result;
+    }
+
+    private static BaseResponse<T> CheckResponse<T>(BaseResponse<T> baseResponse) where T : new()
+    {
+        if (!string.IsNullOrEmpty(baseResponse.ErrorCode))
+        {
+            throw new Exception($"{baseResponse.ErrorCode}{(string.IsNullOrEmpty(baseResponse.ErrorMessage) ? Environment.NewLine : "")}{baseResponse.ErrorMessage}");
+        }
+        return baseResponse;
     }
 }

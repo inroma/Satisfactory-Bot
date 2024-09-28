@@ -4,7 +4,7 @@ using MediatR;
 using SatisfactoryBot.Services.Api.Models;
 using SatisfactoryBot.Services.Api.Models.Responses;
 
-internal record GetHealthQuery : IRequest<BaseBody<HealthResponse>>
+internal record GetHealthQuery : IRequest<BaseResponse<HealthResponse>>
 {
     public string Url { get; set; }
 

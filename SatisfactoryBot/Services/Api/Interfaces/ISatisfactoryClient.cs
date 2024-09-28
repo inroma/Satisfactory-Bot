@@ -14,5 +14,5 @@ public interface ISatisfactoryClient
 
     Task<BaseResponse<AuthResponse>> PasswordLogin(string password);
 
-    Task<BaseBody<StateResponse>> GetState();
+    Task<BaseResponse<StateResponse>> GetState();
 }

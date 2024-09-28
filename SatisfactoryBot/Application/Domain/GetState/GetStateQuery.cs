@@ -4,7 +4,7 @@ using MediatR;
 using SatisfactoryBot.Services.Api.Models;
 using SatisfactoryBot.Services.Api.Models.Responses;
 
-internal record GetStateQuery : IRequest<BaseBody<StateResponse>>
+internal record GetStateQuery : IRequest<BaseResponse<StateResponse>>
 {
     public string Url { get; set; }
 
