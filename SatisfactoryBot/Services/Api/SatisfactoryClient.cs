@@ -95,10 +95,7 @@ public class SatisfactoryClient : ISatisfactoryClient
         var body = new BaseRequest<object>("GetServerOptions");
         var request = new RestRequest().AddBody(body);
         var result = await client.PostAsync<BaseResponse<OptionsResponse>>(request);
-        if (!string.IsNullOrEmpty(result.ErrorCode))
-        {
-            throw new Exception($"{result.ErrorCode}{(string.IsNullOrEmpty(result.ErrorMessage) ? Environment.NewLine : "")}{result.ErrorMessage}");
-        }
+        CheckResponse(result);
         return result;
     }
 
