@@ -4,6 +4,7 @@ using Discord.Interactions;
 using MediatR;
 using Microsoft.Extensions.Logging;
 using SatisfactoryBot.Application.Domain.GetHealth;
+using SatisfactoryBot.Application.Domain.GetState;
 using System.Text.Json;
 using System.Threading.Tasks;
 
@@ -44,13 +45,29 @@ public class TestService : InteractionModuleBase<SocketInteractionContext>
         logger.LogInformation("GetHealth command started");
         try
         {
-            var result = await mediatr.Send(new GetHealthGuery(url, token));
+            var result = await mediatr.Send(new GetHealthQuery(url, token));
 
             await RespondAsync(JsonSerializer.Serialize(result), ephemeral: true);
         }
         catch (Exception ex)
         {
             await RespondAsync("Error getting server Health", ephemeral: true);
+        }
+    }
+
+    [SlashCommand("state", "Get server state")]
+    public async Task ServerState(string url, string token)
+    {
+        logger.LogInformation("ServerState command started");
+        try
+        {
+            var result = await mediatr.Send(new GetStateQuery(url, token));
+
+            await RespondAsync(JsonSerializer.Serialize(result), ephemeral: true);
+        }
+        catch (Exception ex)
+        {
+            await RespondAsync("Error getting server State", ephemeral: true);
         }
     }
 }

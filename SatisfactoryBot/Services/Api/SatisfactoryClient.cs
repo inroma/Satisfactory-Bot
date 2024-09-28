@@ -39,4 +39,11 @@ public class SatisfactoryClient : ISatisfactoryClient
         var request = new RestRequest().AddBody(System.Text.Json.JsonSerializer.Serialize(body));
         return await client.PostAsync<BaseBody<HealthResponse>>(request);
     }
+
+    public async Task<BaseBody<StateResponse>> GetState()
+    {
+        var body = new BaseRequest<object>("QueryServerState");
+        var request = new RestRequest().AddBody(System.Text.Json.JsonSerializer.Serialize(body));
+        return await client.PostAsync<BaseBody<StateResponse>>(request);
+    }
 }
