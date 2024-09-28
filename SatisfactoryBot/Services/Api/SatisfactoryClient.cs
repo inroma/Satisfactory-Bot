@@ -69,4 +69,10 @@ public class SatisfactoryClient : ISatisfactoryClient
         return true;
     }
     
+    public async Task<BaseBody<StateResponse>> GetState()
+    {
+        var body = new BaseRequest<object>("QueryServerState");
+        var request = new RestRequest().AddBody(System.Text.Json.JsonSerializer.Serialize(body));
+        return await client.PostAsync<BaseBody<StateResponse>>(request);
+    }
 }

@@ -8,7 +8,7 @@ using SatisfactoryBot.Services.Api.Models.Responses;
 using System.Threading;
 using System.Threading.Tasks;
 
-internal class GetHealthHandler : IRequestHandler<GetHealthGuery, BaseBody<HealthResponse>>
+internal class GetHealthHandler : IRequestHandler<GetHealthQuery, BaseBody<HealthResponse>>
 {
     private readonly ILogger<GetHealthHandler> logger;
 
@@ -17,7 +17,7 @@ internal class GetHealthHandler : IRequestHandler<GetHealthGuery, BaseBody<Healt
         this.logger = logger;
     }
 
-    public async Task<BaseBody<HealthResponse>> Handle(GetHealthGuery request, CancellationToken cancellationToken)
+    public async Task<BaseBody<HealthResponse>> Handle(GetHealthQuery request, CancellationToken cancellationToken)
     {
         logger.LogInformation("Retrieving server health");
 
