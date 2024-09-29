@@ -2,22 +2,21 @@
 
 using Discord.Interactions;
 
-public class PasswordModal : IModal
+public class ClientPasswordModal : IModal
 {
-    public bool UserPasswordModal { get; set; } = true;
-
-    public string Title => $"{(UserPasswordModal ? "User" : "Admin")} Password update";
+    public string Title => "User Password Update";
 
     [InputLabel(nameof(Password))]
-    [ModalTextInput("password", maxLength: 80)]
+    [RequiredInput(false)]
+    [ModalTextInput("password", maxLength: 200, placeholder: "Empty to remove password")]
     public string Password { get; set; }
+}
 
-    public PasswordModal()
-    {
-    }
+public class AdminPasswordModal : IModal
+{
+    public string Title => "Admin Password Update";
 
-    public PasswordModal(bool isUserPasswordUpdate = true)
-    {
-        UserPasswordModal = isUserPasswordUpdate;
-    }
+    [InputLabel(nameof(Password))]
+    [ModalTextInput("password", maxLength: 200, minLength: 10)]
+    public string Password { get; set; }
 }

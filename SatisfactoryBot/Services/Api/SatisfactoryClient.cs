@@ -135,7 +135,7 @@ public class SatisfactoryClient : ISatisfactoryClient
         return true;
     }
 
-    public async Task<bool> UpdateUserPassword(string password)
+    public async Task<bool> UpdateClientPassword(string password)
     {
         var body = new BaseRequest<PasswordRequest>("SetClientPassword")
         {
@@ -146,6 +146,19 @@ public class SatisfactoryClient : ISatisfactoryClient
         CheckResponse(result);
         return true;
     }
+
+    public async Task<bool> UpdateAdminPassword(string password, string token)
+    {
+        var body = new BaseRequest<AdminPasswordRequest>("SetAdminPassword")
+        {
+            Data = new() { Password = password, AuthenticationToken = token }
+        };
+        var request = new RestRequest().AddBody(body);
+        var result = await client.PostAsync<BaseResponse<object>>(request);
+        CheckResponse(result);
+        return true;
+    }
+
     #endregion Public Methods
 
     #region Private Methods

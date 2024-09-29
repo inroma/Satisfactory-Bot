@@ -3,8 +3,8 @@
 using Discord.Interactions;
 using MediatR;
 using Microsoft.Extensions.Logging;
-using SatisfactoryBot.Application.Domain.ClaimSatisfactoryServer;
-using SatisfactoryBot.Models.Enums;
+using SatisfactoryBot.Application.Domain.UpdateAdminPassword;
+using SatisfactoryBot.Application.Domain.UpdateClientPassword;
 using SatisfactoryBot.Models.Modals;
 
 public partial class PasswordModule : InteractionModuleBase<SocketInteractionContext>
@@ -26,14 +26,13 @@ public partial class PasswordModule : InteractionModuleBase<SocketInteractionCon
 
     #endregion Public Constructor
 
-    [SlashCommand("user-password", "Update user server password")]
-    public async Task ShowModalUpdateUserPassword()
+    [SlashCommand("user-password", "Update client password to access server")]
+    public async Task ShowModalUpdateClientPassword()
     {
         try
         {
-            logger.LogInformation("{User} starts updating UserPassword", Context.User.Id);
-            var modal = new PasswordModal();
-            await RespondWithModalAsync("password-modal", modal);
+            logger.LogInformation("{User} starts updating ClientPassword", Context.User.Id);
+            await RespondWithModalAsync<ClientPasswordModal>("user-password-modal");
         }
         catch (Exception ex)
         {
@@ -47,8 +46,7 @@ public partial class PasswordModule : InteractionModuleBase<SocketInteractionCon
         try
         {
             logger.LogInformation("{User} starts updating AdminPassword", Context.User.Id);
-            var modal = new PasswordModal(false);
-            await RespondWithModalAsync("password-modal", modal);
+            await RespondWithModalAsync<AdminPasswordModal>("admin-password-modal");
         }
         catch (Exception ex)
         {
@@ -56,27 +54,45 @@ public partial class PasswordModule : InteractionModuleBase<SocketInteractionCon
         }
     }
 
-    [ModalInteraction("password-modal")]
-    public async Task StartClaiming(PasswordModal claim)
+    [ModalInteraction("user-password-modal")]
+    public async Task StartClaiming(ClientPasswordModal modal)
     {
-        logger.LogInformation("{User} confirmed new {Type} password", Context.User.Id, claim.UserPasswordModal ? "User" : "Admin");
+        logger.LogInformation("{User} confirmed new Client password", Context.User.Id);
         try
         {
             var result = false;
-            if (claim.UserPasswordModal)
+            result = await mediatr.Send(new UpdateClientPasswordCommand()
             {
-                //result = await mediatr.Send(new UpdateUserPassword(claim.Url, claim.Password, claim.Token, Context.Guild.Id, Context.User.Id));
-            }
-            else
-            {
-                //result = await mediatr.Send(new ClaimSatisfactoryServerCommand(claim.Url, claim.Password, claim.Token, Context.Guild.Id, Context.User.Id));
-            }
-            await RespondAsync(result ? "Server claimed successfully !" : "Error claiming the server");
+                Password = modal.Password,
+                GuildId = Context.Guild.Id
+            });
+            await RespondAsync(result ? "Client password updated successfully !" : "Error updating client password");
         }
         catch (Exception e)
         {
-            logger.LogError(e, "Error during claim, server responded: {ExMessage}", e.Message);
-            await RespondAsync($"Error during claim, server responded: {e.Message}");
+            logger.LogError(e, "Error updating client password: {ExMessage}", e.Message);
+            await RespondAsync($"Error updating client password: {e.Message}");
+        }
+    }
+
+    [ModalInteraction("admin-password-modal")]
+    public async Task StartClaiming(AdminPasswordModal modal)
+    {
+        logger.LogInformation("{User} confirmed new Admin password", Context.User.Id);
+        try
+        {
+            var result = false;
+            result = await mediatr.Send(new UpdateAdminPasswordCommand()
+            {
+                Password = modal.Password,
+                GuildId = Context.Guild.Id
+            });
+            await RespondAsync(result ? "Admin password updated successfully !" : "Error updating Admin password");
+        }
+        catch (Exception e)
+        {
+            logger.LogError(e, "Error updating Admin password: {ExMessage}", e.Message);
+            await RespondAsync($"Error updating Admin password: {e.Message}");
         }
     }
 }

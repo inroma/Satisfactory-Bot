@@ -25,5 +25,7 @@ public interface ISatisfactoryClient
 
     Task<bool> RenameServer(string newName);
 
-    Task<bool> UpdateUserPassword(string password);
+    Task<bool> UpdateClientPassword(string password);
+
+    Task<bool> UpdateAdminPassword(string password, string token);
 }

@@ -1,4 +1,4 @@
-﻿namespace SatisfactoryBot.Application.Domain.UpdateClientPassword;
+﻿namespace SatisfactoryBot.Application.Domain.UpdateAdminPassword;
 
 using MediatR;
 using Microsoft.Extensions.Logging;
@@ -8,11 +8,11 @@ using SatisfactoryBot.Services.Api.Interfaces;
 using System.Threading;
 using System.Threading.Tasks;
 
-internal class UpdateClientPasswordHandler : IRequestHandler<UpdateClientPasswordCommand, bool>
+internal class UpdateAdminPasswordHandler : IRequestHandler<UpdateAdminPasswordCommand, bool>
 {
     #region Private Properties
 
-    private readonly ILogger<UpdateClientPasswordHandler> logger;
+    private readonly ILogger<UpdateAdminPasswordHandler> logger;
     private ISatisfactoryClient satisfactoryClient;
     private readonly IDiscordServerRepository discordServerRepository;
 
@@ -20,7 +20,7 @@ internal class UpdateClientPasswordHandler : IRequestHandler<UpdateClientPasswor
 
     #region Public Constructor
 
-    public UpdateClientPasswordHandler(ILogger<UpdateClientPasswordHandler> logger, IDiscordServerRepository serverRepository)
+    public UpdateAdminPasswordHandler(ILogger<UpdateAdminPasswordHandler> logger, IDiscordServerRepository serverRepository)
     {
         this.logger = logger;
         discordServerRepository = serverRepository;
@@ -28,7 +28,7 @@ internal class UpdateClientPasswordHandler : IRequestHandler<UpdateClientPasswor
 
     #endregion Public Constructor
 
-    public async Task<bool> Handle(UpdateClientPasswordCommand request, CancellationToken cancellationToken)
+    public async Task<bool> Handle(UpdateAdminPasswordCommand request, CancellationToken cancellationToken)
     {
         try
         {
@@ -36,7 +36,8 @@ internal class UpdateClientPasswordHandler : IRequestHandler<UpdateClientPasswor
             if (server != null)
             {
                 satisfactoryClient = new SatisfactoryClient(server.Url, server.Token);
-                return await satisfactoryClient.UpdateClientPassword(request.Password);
+                return await satisfactoryClient.UpdateAdminPassword(request.Password, server.Token);
+                //TODO: Update all satis client in DB with new token ?
             }
         }
         catch (Exception ex)
