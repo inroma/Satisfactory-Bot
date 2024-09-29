@@ -45,6 +45,7 @@ public partial class ClaimModule : InteractionModuleBase<SocketInteractionContex
                 else if (claimMethod == ClaimEnum.Token)
                 {
                     m.RemoveComponent("password");
+                    m.RemoveComponent("name");
                 }
                 m.Components.ActionRows = m.Components.ActionRows.Where(r => r.Components.Count > 0).ToList();
             });
@@ -66,13 +67,22 @@ public partial class ClaimModule : InteractionModuleBase<SocketInteractionContex
         }
         try
         {
-            var result = await mediatr.Send(new ClaimSatisfactoryServerCommand(claim.Url, claim.Password, claim.Token, Context.Guild.Id, Context.User.Id));
-            await RespondAsync(result ? "Server claimed successfully !" : "Error claiming the server");
+            await DeferAsync();
+            var result = await mediatr.Send(new ClaimSatisfactoryServerCommand()
+            {
+                ServerName = claim.ServerName,
+                Url = claim.Url,
+                Password = claim.Password,
+                Token = claim.Token,
+                GuildId = Context.Guild.Id,
+                UserId = Context.User.Id,
+            });
+            await FollowupAsync(result ? "Server claimed successfully !" : "Error claiming the server");
         }
         catch (Exception e)
         {
-            logger.LogError(e, "Error during claim, server responded: {ExMessage}", e.Message);
-            await RespondAsync($"Error during claim, server responded: {e.Message}");
+            logger.LogError(e, "Error during claim: {ExMessage}", e.Message);
+            await FollowupAsync($"Error during claim: {e.Message}");
         }
     }
 }

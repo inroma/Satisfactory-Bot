@@ -11,6 +11,7 @@ using SatisfactoryBot.Services.Api.Models.Responses;
 using SatisfactoryBot.Services.Api.Interfaces;
 using SatisfactoryBot.Services.Api.Models.Misc;
 using SatisfactoryBot.Data.Repositories.Interfaces;
+using Microsoft.Extensions.Logging;
 
 public class ClaimSatisfactoryServerHandler : IRequestHandler<ClaimSatisfactoryServerCommand, bool>
 {
@@ -19,51 +20,65 @@ public class ClaimSatisfactoryServerHandler : IRequestHandler<ClaimSatisfactoryS
     private readonly IUnitOfWork<ApplicationDbContext> unitOfWork;
     private ISatisfactoryClient client;
     private readonly IDiscordServerRepository discordRepository;
+    private readonly ILogger<ClaimSatisfactoryServerHandler> logger;
 
     #endregion Private Properties
 
     #region Public Constructor
 
-    public ClaimSatisfactoryServerHandler(IUnitOfWork<ApplicationDbContext> unitOfWork, IDiscordServerRepository discordServerRepository)
+    public ClaimSatisfactoryServerHandler(IUnitOfWork<ApplicationDbContext> unitOfWork, IDiscordServerRepository discordServerRepository,
+        ILogger<ClaimSatisfactoryServerHandler> logger)
     {
         this.unitOfWork = unitOfWork;
         discordRepository = discordServerRepository;
+        this.logger = logger;
     }
 
     #endregion Public Constructor
 
     public async Task<bool> Handle(ClaimSatisfactoryServerCommand request, CancellationToken cancellationToken)
     {
-        if (string.IsNullOrEmpty(request.Token) && !string.IsNullOrEmpty(request.Password))
+        try
         {
-            var token = (await PasswordLessLogin(request.Url, ApiPrivilegeLevel.InitialAdmin)).AuthenticationToken;
-            request.Token = (await ClaimServer(request.Url, token, request.Password)).AuthenticationToken;
-        }
-        else if (!string.IsNullOrEmpty(request.Token))
-        {
-            await TokenAuthToSatisfactoryServer(request.Url, request.Token);
-        }
-        if (request.Token != null)
-        {
-            var discordServer = discordRepository.GetOrCreateDiscordServer(request.GuildId);
-            var isDefault = discordServer.SatisfactoryServers?.Count == 0;
-            var satServer = new SatisfactoryServer()
+            if (string.IsNullOrEmpty(request.Token) && !string.IsNullOrEmpty(request.Password))
             {
-                Owner = request.UserId,
-                Token = request.Token,
-                Url = request.Url,
-                DiscordServer = discordServer,
-                IsDefaultServer = isDefault,
-            };
-            if (discordServer.Id != default && unitOfWork.GetRepository<SatisfactoryServer>().GetFirstOrDefault(s =>
-                s.DiscordServerId == discordServer.Id && s.Token == satServer.Token) != null)
-            {
-                throw new Exception("Satisfactory server already registered on this Discord. Operation canceled.");
+                var token = (await PasswordLessLogin(request.Url, ApiPrivilegeLevel.InitialAdmin)).AuthenticationToken;
+                request.Token = (await ClaimServer(request.Url, token, request.ServerName, request.Password)).AuthenticationToken;
             }
+            else if (!string.IsNullOrEmpty(request.Token))
+            {
+                await TokenAuthToSatisfactoryServer(request.Url, request.Token);
+            }
+            if (request.Token != null)
+            {
+                var discordServer = discordRepository.GetOrCreateDiscordServer(request.GuildId);
 
-            unitOfWork.GetRepository<SatisfactoryServer>().Add(satServer);
-            var result = unitOfWork.Save();
-            return await Task.FromResult(result > 0);
+                if (discordServer.Id != default && unitOfWork.GetRepository<SatisfactoryServer>().GetFirstOrDefault(s =>
+                    s.DiscordServerId == discordServer.Id && s.Token == request.Token) != null)
+                {
+                    throw new Exception("Satisfactory server already registered on this Discord. Operation canceled.");
+                }
+
+                var satisfactoryInfos = await QueryServerState(request.Url, request.Token);
+                var isDefault = discordServer.SatisfactoryServers?.Count(s => s.IsDefaultServer) == 0;
+                var satServer = new SatisfactoryServer()
+                {
+                    Owner = request.UserId,
+                    Token = request.Token,
+                    Url = request.Url,
+                    Name = satisfactoryInfos.ServerGameState.ActiveSessionName,
+                    DiscordServer = discordServer,
+                    IsDefaultServer = isDefault,
+                };
+
+                unitOfWork.GetRepository<SatisfactoryServer>().Add(satServer);
+                var result = unitOfWork.Save();
+                return await Task.FromResult(result > 0);
+            }
+        }
+        catch
+        {
+            throw;
         }
         return false;
     }
@@ -81,10 +96,32 @@ public class ClaimSatisfactoryServerHandler : IRequestHandler<ClaimSatisfactoryS
         return result.Data;
     }
 
-    private async Task<AuthResponse> ClaimServer(string url, string token, string initAdminPwd)
+    private async Task<AuthResponse> ClaimServer(string url, string token, string servName, string initAdminPwd)
     {
-        client = new SatisfactoryClient(url, token);
-        var result = await client.ClaimServer(initAdminPwd);
-        return result.Data;
+        try
+        {
+            client = new SatisfactoryClient(url, token);
+            var result = await client.ClaimServer(servName, initAdminPwd);
+            return result.Data;
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error claiming server. {Ex}", ex.Message);
+            throw;
+        }
+    }
+
+    private async Task<StateResponse> QueryServerState(string url, string token)
+    {
+        try
+        {
+            client = new SatisfactoryClient(url, token);
+            var result = await client.GetState();
+            return result.Data;
+        }
+        catch
+        {
+            throw;
+        }
     }
 }

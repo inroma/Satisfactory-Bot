@@ -69,12 +69,13 @@ public class SatisfactoryClient : ISatisfactoryClient
 
     #region Public Methods
 
-    public async Task<BaseResponse<AuthResponse>> ClaimServer(string adminPwd)
+    public async Task<BaseResponse<AuthResponse>> ClaimServer(string servName, string adminPwd)
     {
         var body = new BaseRequest<ClaimServerRequest>("ClaimServer")
         {
             Data = new()
             {
+                ServerName = servName,
                 AdminPassword = adminPwd
             }
         };
@@ -164,7 +165,7 @@ public class SatisfactoryClient : ISatisfactoryClient
     {
         if (!string.IsNullOrEmpty(baseResponse.ErrorCode))
         {
-            throw new Exception($"{baseResponse.ErrorCode}{(string.IsNullOrEmpty(baseResponse.ErrorMessage) ? Environment.NewLine : "")}{baseResponse.ErrorMessage}");
+            throw new Exception($"{baseResponse.ErrorCode}. {baseResponse.ErrorMessage}".Trim());
         }
         return baseResponse;
     }
