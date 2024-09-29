@@ -76,6 +76,8 @@ public class SatisfactoryClient : ISatisfactoryClient
 
     #endregion Auth
 
+    #region Public Methods
+
     public async Task<BaseResponse<AuthResponse>> ClaimServer()
     {
         var body = new BaseRequest<ClaimServerRequest>("ClaimServer");
@@ -133,6 +135,9 @@ public class SatisfactoryClient : ISatisfactoryClient
         return true;
     }
 
+    #endregion Public Methods
+
+    #region Private Methods
 
     private static BaseResponse<T> CheckResponse<T>(BaseResponse<T> baseResponse) where T : new()
     {
@@ -142,4 +147,6 @@ public class SatisfactoryClient : ISatisfactoryClient
         }
         return baseResponse;
     }
+
+    #endregion Private Methods
 }
