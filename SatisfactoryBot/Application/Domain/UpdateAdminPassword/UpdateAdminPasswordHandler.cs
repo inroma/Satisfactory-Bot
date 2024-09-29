@@ -39,12 +39,15 @@ internal class UpdateAdminPasswordHandler : IRequestHandler<UpdateAdminPasswordC
                 return await satisfactoryClient.UpdateAdminPassword(request.Password, server.Token);
                 //TODO: Update all satis client in DB with new token ?
             }
+            else
+            {
+                throw new Exception("No active Satisfactory server defined, please select one first with /list.");
+            }
         }
         catch (Exception ex)
         {
-            logger.LogError(ex, "Error during Server Rename: {Ex}", ex.Message);
-            return false;
+            logger.LogError(ex, "Error during Server Admin password update: {Ex}", ex.Message);
+            throw;
         }
-        return false;
     }
 }

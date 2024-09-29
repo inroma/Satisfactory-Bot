@@ -41,7 +41,7 @@ internal class UpdateClientPasswordHandler : IRequestHandler<UpdateClientPasswor
         }
         catch (Exception ex)
         {
-            logger.LogError(ex, "Error during Server Rename: {Ex}", ex.Message);
+            logger.LogError(ex, "Error during Server Client password update: {Ex}", ex.Message);
             return false;
         }
         return false;
