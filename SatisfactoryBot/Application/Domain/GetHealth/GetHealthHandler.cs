@@ -9,7 +9,7 @@ using SatisfactoryBot.Services.Api.Models.Responses;
 using System.Threading;
 using System.Threading.Tasks;
 
-internal class GetHealthHandler : IRequestHandler<GetHealthQuery, BaseBody<HealthResponse>>
+internal class GetHealthHandler : IRequestHandler<GetHealthQuery, BaseResponse<HealthResponse>>
 {
     private readonly ILogger<GetHealthHandler> logger;
     private readonly IDiscordServerRepository repository;
@@ -20,7 +20,7 @@ internal class GetHealthHandler : IRequestHandler<GetHealthQuery, BaseBody<Healt
         repository = discordServerRepository;
     }
 
-    public async Task<BaseBody<HealthResponse>> Handle(GetHealthQuery request, CancellationToken cancellationToken)
+    public async Task<BaseResponse<HealthResponse>> Handle(GetHealthQuery request, CancellationToken cancellationToken)
     {
         logger.LogInformation("Retrieving server health");
 
