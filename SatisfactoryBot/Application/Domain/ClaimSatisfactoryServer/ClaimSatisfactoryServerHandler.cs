@@ -10,6 +10,7 @@ using SatisfactoryBot.Services.Api;
 using SatisfactoryBot.Services.Api.Models.Responses;
 using SatisfactoryBot.Services.Api.Interfaces;
 using SatisfactoryBot.Services.Api.Models.Misc;
+using SatisfactoryBot.Data.Repositories.Interfaces;
 
 public class ClaimSatisfactoryServerHandler : IRequestHandler<ClaimSatisfactoryServerCommand, bool>
 {
@@ -17,14 +18,16 @@ public class ClaimSatisfactoryServerHandler : IRequestHandler<ClaimSatisfactoryS
 
     private readonly IUnitOfWork<ApplicationDbContext> unitOfWork;
     private ISatisfactoryClient client;
+    private readonly IDiscordServerRepository discordRepository;
 
     #endregion Private Properties
 
     #region Public Constructor
 
-    public ClaimSatisfactoryServerHandler(IUnitOfWork<ApplicationDbContext> unitOfWork)
+    public ClaimSatisfactoryServerHandler(IUnitOfWork<ApplicationDbContext> unitOfWork, IDiscordServerRepository discordServerRepository)
     {
         this.unitOfWork = unitOfWork;
+        discordRepository = discordServerRepository;
     }
 
     #endregion Public Constructor
@@ -46,7 +49,7 @@ public class ClaimSatisfactoryServerHandler : IRequestHandler<ClaimSatisfactoryS
         }
         if (request.Token != null)
         {
-            var discordServer = GetOrCreateDiscordServer(request.GuildId);
+            var discordServer = discordRepository.GetOrCreateDiscordServer(request.GuildId);
             var satServer = new SatisfactoryServer()
             {
                 Owner = request.UserId,
@@ -87,20 +90,5 @@ public class ClaimSatisfactoryServerHandler : IRequestHandler<ClaimSatisfactoryS
         client = new SatisfactoryClient(url);
         var result = await client.PasswordLogin(password);
         return result.Data;
-    }
-
-    private DiscordServer GetOrCreateDiscordServer(ulong guildId)
-    {
-        var discordRepository = unitOfWork.GetRepository<DiscordServer>();
-        var discordServer = discordRepository.GetFirstOrDefault(d => d.GuildId == guildId);
-        if (discordServer == null)
-        {
-            discordServer = new DiscordServer()
-            {
-                GuildId = guildId
-            };
-            discordRepository.Add(discordServer);
-        }
-        return discordServer;
     }
 }

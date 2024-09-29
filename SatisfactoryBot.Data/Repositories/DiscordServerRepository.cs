@@ -21,6 +21,21 @@ public class DiscordServerRepository : GenericRepository<DiscordServer>, IDiscor
             .SelectMany(d => d.SatisfactoryServers).FirstOrDefault();
     }
 
+    public DiscordServer GetOrCreateDiscordServer(ulong guildId)
+    {
+        var discordRepository = unitOfWork.GetRepository<DiscordServer>();
+        var discordServer = discordRepository.GetFirstOrDefault(d => d.GuildId == guildId);
+        if (discordServer == null)
+        {
+            discordServer = new DiscordServer()
+            {
+                GuildId = guildId
+            };
+            discordRepository.Add(discordServer);
+        }
+        return discordServer;
+    }
+
     #region Public Inheritance
 
     #endregion Public Inheritance
