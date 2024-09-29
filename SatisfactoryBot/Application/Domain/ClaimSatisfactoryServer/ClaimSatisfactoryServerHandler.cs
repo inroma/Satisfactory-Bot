@@ -34,7 +34,7 @@ public class ClaimSatisfactoryServerHandler : IRequestHandler<ClaimSatisfactoryS
 
     public async Task<bool> Handle(ClaimSatisfactoryServerCommand request, CancellationToken cancellationToken)
     {
-        if (string.IsNullOrEmpty(request.Token) && string.IsNullOrEmpty(request.Password))
+        if (string.IsNullOrEmpty(request.Token))
         {
             var token = (await PasswordLessLogin(request.Url, ApiPrivilegeLevel.InitialAdmin)).AuthenticationToken;
             request.Token = (await ClaimServer(request.Url, token)).AuthenticationToken;
@@ -42,10 +42,6 @@ public class ClaimSatisfactoryServerHandler : IRequestHandler<ClaimSatisfactoryS
         else if (!string.IsNullOrEmpty(request.Token))
         {
             await TokenAuthToSatisfactoryServer(request.Url, request.Token);
-        }
-        else if (!string.IsNullOrEmpty(request.Password))
-        {
-            request.Token = (await PasswordLogin(request.Url, request.Password)).AuthenticationToken;
         }
         if (request.Token != null)
         {
@@ -89,13 +85,6 @@ public class ClaimSatisfactoryServerHandler : IRequestHandler<ClaimSatisfactoryS
     {
         client = new SatisfactoryClient(url, token);
         var result = await client.ClaimServer();
-        return result.Data;
-    }
-
-    private async Task<AuthResponse> PasswordLogin(string url, string password)
-    {
-        client = new SatisfactoryClient(url);
-        var result = await client.PasswordLogin(password);
         return result.Data;
     }
 }

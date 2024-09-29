@@ -52,15 +52,6 @@ public class SatisfactoryClient : ISatisfactoryClient
         return result;
     }
 
-    public async Task<BaseResponse<AuthResponse>> PasswordLogin(string password)
-    {
-        var body = new BaseRequest<PasswordLoginRequest>("PasswordLogin");
-        var request = new RestRequest().AddBody(body);
-        var result = await client.PostAsync<BaseResponse<AuthResponse>>(request);
-        CheckResponse(result);
-        return result;
-    }
-
     public async Task<bool> VerifyAuthenticationToken()
     {
         var body = new BaseRequest<object>("VerifyAuthenticationToken");

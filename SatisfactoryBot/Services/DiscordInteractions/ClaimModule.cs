@@ -38,13 +38,10 @@ public partial class ClaimModule : InteractionModuleBase<SocketInteractionContex
         {
             logger.LogInformation("{User} starts claiming a server with {ClaimMethod}", Context.User.Id, claimMethod);
             await RespondWithModalAsync<ClaimModal>("claim-modal", modifyModal: (m) => {
-                _ = claimMethod switch
+                if (claimMethod == ClaimEnum.PasswordLess)
                 {
-                    ClaimEnum.Token => m.RemoveComponent("password"),
-                    ClaimEnum.Password => m.RemoveComponent("token"),
-                    ClaimEnum.PasswordLess => m.RemoveComponent("token").RemoveComponent("password"),
-                    _ => throw new NotImplementedException(),
-                };
+                    m.RemoveComponent("token");
+                }
                 m.Components.ActionRows = m.Components.ActionRows.Where(r => r.Components.Count > 0).ToList();
             });
         }
@@ -65,7 +62,7 @@ public partial class ClaimModule : InteractionModuleBase<SocketInteractionContex
         }
         try
         {
-            var result = await mediatr.Send(new ClaimSatisfactoryServerCommand(claim.Url, claim.Password, claim.Token, Context.Guild.Id, Context.User.Id));
+            var result = await mediatr.Send(new ClaimSatisfactoryServerCommand(claim.Url, claim.Token, Context.Guild.Id, Context.User.Id));
             await RespondAsync(result ? "Server claimed successfully !" : "Error claiming the server");
         }
         catch (Exception e)

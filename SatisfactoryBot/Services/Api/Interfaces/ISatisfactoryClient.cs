@@ -13,8 +13,6 @@ public interface ISatisfactoryClient
 
     Task<bool> VerifyAuthenticationToken();
 
-    Task<BaseResponse<AuthResponse>> PasswordLogin(string password);
-
     Task<BaseResponse<AuthResponse>> ClaimServer();
 
     Task<BaseResponse<StateResponse>> GetState();

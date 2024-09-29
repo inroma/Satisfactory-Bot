@@ -11,10 +11,6 @@ public class ClaimModal : IModal
     [ModalTextInput("url", maxLength: 200, initValue: "https://")]
     public string Url { get; set; }
 
-    [InputLabel(nameof(Password))]
-    [ModalTextInput("password", maxLength: 80)]
-    public string Password { get; set; }
-
     [InputLabel(nameof(Token))]
     [ModalTextInput("token", TextInputStyle.Paragraph, maxLength: 500)]
     public string Token { get; set; }
