@@ -9,6 +9,7 @@ using SatisfactoryBot.Data.Models;
 using SatisfactoryBot.Services.Api;
 using SatisfactoryBot.Services.Api.Models.Responses;
 using SatisfactoryBot.Services.Api.Interfaces;
+using SatisfactoryBot.Services.Api.Models.Misc;
 
 public class ClaimSatisfactoryServerHandler : IRequestHandler<ClaimSatisfactoryServerCommand, bool>
 {
@@ -32,7 +33,8 @@ public class ClaimSatisfactoryServerHandler : IRequestHandler<ClaimSatisfactoryS
     {
         if (string.IsNullOrEmpty(request.Token) && string.IsNullOrEmpty(request.Password))
         {
-            request.Token = (await PasswordLessLogin(request.Url)).AuthenticationToken;
+            var token = (await PasswordLessLogin(request.Url, ApiPrivilegeLevel.InitialAdmin)).AuthenticationToken;
+            request.Token = (await ClaimServer(request.Url, token)).AuthenticationToken;
         }
         else if (!string.IsNullOrEmpty(request.Token))
         {
@@ -66,10 +68,17 @@ public class ClaimSatisfactoryServerHandler : IRequestHandler<ClaimSatisfactoryS
         return await client.VerifyAuthenticationToken();
     }
 
-    private async Task<AuthResponse> PasswordLessLogin(string url)
+    private async Task<AuthResponse> PasswordLessLogin(string url, ApiPrivilegeLevel apiPrivilege)
     {
         client = new SatisfactoryClient(url);
-        var result = await client.PasswordLessLogin();
+        var result = await client.PasswordLessLogin(apiPrivilege);
+        return result.Data;
+    }
+
+    private async Task<AuthResponse> ClaimServer(string url, string token)
+    {
+        client = new SatisfactoryClient(url, token);
+        var result = await client.ClaimServer();
         return result.Data;
     }
 

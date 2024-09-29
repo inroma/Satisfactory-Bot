@@ -4,6 +4,7 @@ using RestSharp;
 using RestSharp.Authenticators;
 using SatisfactoryBot.Services.Api.Interfaces;
 using SatisfactoryBot.Services.Api.Models;
+using SatisfactoryBot.Services.Api.Models.Misc;
 using SatisfactoryBot.Services.Api.Models.Requests;
 using SatisfactoryBot.Services.Api.Models.Responses;
 
@@ -38,9 +39,13 @@ public class SatisfactoryClient : ISatisfactoryClient
 
     #region Auth
 
-    public async Task<BaseResponse<AuthResponse>> PasswordLessLogin()
+    public async Task<BaseResponse<AuthResponse>> PasswordLessLogin(ApiPrivilegeLevel apiPrivilege = ApiPrivilegeLevel.Administrator)
     {
-        var body = new BaseRequest<PasswordLessLoginRequest>("PasswordlessLogin");
+        var content = new PasswordLessLoginRequest() { MinimumPrivilegeLevel = apiPrivilege };
+        var body = new BaseRequest<PasswordLessLoginRequest>("PasswordlessLogin")
+        {
+            Data = content
+        };
         var request = new RestRequest().AddBody(body);
         var result = await client.PostAsync<BaseResponse<AuthResponse>>(request);
         CheckResponse(result);
@@ -71,6 +76,15 @@ public class SatisfactoryClient : ISatisfactoryClient
     }
 
     #endregion Auth
+
+    public async Task<BaseResponse<AuthResponse>> ClaimServer()
+    {
+        var body = new BaseRequest<ClaimServerRequest>("ClaimServer");
+        var request = new RestRequest().AddBody(body);
+        var result = await client.PostAsync<BaseResponse<AuthResponse>>(request);
+        CheckResponse(result);
+        return result;
+    }
 
     public async Task<BaseResponse<HealthResponse>> GetHealth()
     {
