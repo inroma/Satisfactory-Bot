@@ -69,9 +69,15 @@ public class SatisfactoryClient : ISatisfactoryClient
 
     #region Public Methods
 
-    public async Task<BaseResponse<AuthResponse>> ClaimServer()
+    public async Task<BaseResponse<AuthResponse>> ClaimServer(string adminPwd)
     {
-        var body = new BaseRequest<ClaimServerRequest>("ClaimServer");
+        var body = new BaseRequest<ClaimServerRequest>("ClaimServer")
+        {
+            Data = new()
+            {
+                AdminPassword = adminPwd
+            }
+        };
         var request = new RestRequest().AddBody(body);
         var result = await client.PostAsync<BaseResponse<AuthResponse>>(request);
         CheckResponse(result);

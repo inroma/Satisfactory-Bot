@@ -42,6 +42,10 @@ public partial class ClaimModule : InteractionModuleBase<SocketInteractionContex
                 {
                     m.RemoveComponent("token");
                 }
+                else if (claimMethod == ClaimEnum.Token)
+                {
+                    m.RemoveComponent("password");
+                }
                 m.Components.ActionRows = m.Components.ActionRows.Where(r => r.Components.Count > 0).ToList();
             });
         }
