@@ -41,10 +41,9 @@ public class SatisfactoryClient : ISatisfactoryClient
 
     public async Task<BaseResponse<AuthResponse>> PasswordLessLogin(ApiPrivilegeLevel apiPrivilege = ApiPrivilegeLevel.Administrator)
     {
-        var content = new PasswordLessLoginRequest() { MinimumPrivilegeLevel = apiPrivilege };
         var body = new BaseRequest<PasswordLessLoginRequest>("PasswordlessLogin")
         {
-            Data = content
+            Data = new() { MinimumPrivilegeLevel = apiPrivilege },
         };
         var request = new RestRequest().AddBody(body);
         var result = await client.PostAsync<BaseResponse<AuthResponse>>(request);
@@ -163,7 +162,7 @@ public class SatisfactoryClient : ISatisfactoryClient
 
     private static BaseResponse<T> CheckResponse<T>(BaseResponse<T> baseResponse) where T : new()
     {
-        if (!string.IsNullOrEmpty(baseResponse.ErrorCode))
+        if (!string.IsNullOrEmpty(baseResponse?.ErrorCode))
         {
             throw new Exception($"{baseResponse.ErrorCode}. {baseResponse.ErrorMessage}".Trim());
         }
