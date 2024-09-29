@@ -6,13 +6,10 @@ using SatisfactoryBot.Services.Api.Models.Responses;
 
 internal record GetStateQuery : IRequest<BaseResponse<StateResponse>>
 {
-    public string Url { get; set; }
+    public ulong GuildId { get; set; }
 
-    public string Token { get; set; }
-
-    public GetStateQuery(string url, string token)
+    public GetStateQuery(ulong guildId)
     {
-        Url = url;
-        Token = token;
+        GuildId = guildId;
     }
 }

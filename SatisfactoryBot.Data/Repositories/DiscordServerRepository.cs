@@ -14,12 +14,16 @@ public class DiscordServerRepository : GenericRepository<DiscordServer>, IDiscor
         this.unitOfWork = unitOfWork;
     }
 
-    public SatisfactoryServer GetSatisfactoryServerFromDiscordGuildId(ulong guildId)
-    {
-        return unitOfWork.GetRepository<DiscordServer>().GetAll()
+    public SatisfactoryServer GetActiveSatisfactoryFromDiscordGuildId(ulong guildId) =>
+        unitOfWork.GetRepository<DiscordServer>().GetAll()
             .Where(s => s.GuildId == guildId)
-            .SelectMany(d => d.SatisfactoryServers).FirstOrDefault();
-    }
+            .SelectMany(d => d.SatisfactoryServers)
+            .FirstOrDefault(s => s.IsDefaultServer);
+
+    public List<SatisfactoryServer> GetSatisfactoryServersListFromDiscordGuildId(ulong guildId) =>
+        unitOfWork.GetRepository<DiscordServer>().GetAll()
+            .Where(s => s.GuildId == guildId)
+            .SelectMany(d => d.SatisfactoryServers).ToList();
 
     public DiscordServer GetOrCreateDiscordServer(ulong guildId)
     {

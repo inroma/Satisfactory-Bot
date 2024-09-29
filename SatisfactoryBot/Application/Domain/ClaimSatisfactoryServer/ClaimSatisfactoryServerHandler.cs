@@ -50,12 +50,14 @@ public class ClaimSatisfactoryServerHandler : IRequestHandler<ClaimSatisfactoryS
         if (request.Token != null)
         {
             var discordServer = discordRepository.GetOrCreateDiscordServer(request.GuildId);
+            var isDefault = discordServer.SatisfactoryServers?.Count == 0;
             var satServer = new SatisfactoryServer()
             {
                 Owner = request.UserId,
                 Token = request.Token,
                 Url = request.Url,
-                DiscordServer = discordServer
+                DiscordServer = discordServer,
+                IsDefaultServer = isDefault,
             };
             if (discordServer.Id != default && unitOfWork.GetRepository<SatisfactoryServer>().GetFirstOrDefault(s =>
                 s.DiscordServerId == discordServer.Id && s.Token == satServer.Token) != null)

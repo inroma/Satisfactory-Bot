@@ -24,4 +24,6 @@ public interface ISatisfactoryClient
     Task<BaseResponse<AdvancedGameSettingsResponse>> GetAdvancedGameSettings();
 
     Task<bool> RenameServer(string newName);
+
+    Task<bool> UpdateUserPassword(string password);
 }

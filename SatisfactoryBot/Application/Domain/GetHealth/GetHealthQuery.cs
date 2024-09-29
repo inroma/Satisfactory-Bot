@@ -6,13 +6,10 @@ using SatisfactoryBot.Services.Api.Models.Responses;
 
 internal record GetHealthQuery : IRequest<BaseResponse<HealthResponse>>
 {
-    public string Url { get; set; }
+    public ulong GuildId { get; set; }
 
-    public string Token { get; set; }
-
-    public GetHealthQuery(string url, string token)
+    public GetHealthQuery(ulong guildId)
     {
-        Url = url;
-        Token = token;
+        GuildId = guildId;
     }
 }

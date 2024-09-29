@@ -2,11 +2,8 @@
 
 using System.Text.Json.Serialization;
 
-public class PasswordLoginRequest
+public class PasswordLoginRequest : PasswordRequest
 {
     [JsonPropertyName("minimumPrivilegeLevel")]
     public string MinimumPrivilegeLevel { get; set; }
-
-    [JsonPropertyName("password")]
-    public string Password { get; set; }
 }

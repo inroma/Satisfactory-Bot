@@ -31,12 +31,12 @@ public class SatisfactoryService : InteractionModuleBase<SocketInteractionContex
     #endregion Public Constructor
 
     [SlashCommand("health", "Get server health")]
-    public async Task Health(string url, string token)
+    public async Task Health()
     {
         logger.LogInformation("GetHealth command started");
         try
         {
-            var result = await mediatr.Send(new GetHealthQuery(url, token));
+            var result = await mediatr.Send(new GetHealthQuery(Context.Guild.Id));
 
             await RespondAsync(JsonSerializer.Serialize(result), ephemeral: true);
         }
@@ -48,12 +48,12 @@ public class SatisfactoryService : InteractionModuleBase<SocketInteractionContex
     }
 
     [SlashCommand("state", "Get server state")]
-    public async Task ServerState(string url, string token)
+    public async Task ServerState()
     {
         logger.LogInformation("ServerState command started");
         try
         {
-            var result = await mediatr.Send(new GetStateQuery(url, token));
+            var result = await mediatr.Send(new GetStateQuery(Context.Guild.Id));
 
             await RespondAsync(JsonSerializer.Serialize(result), ephemeral: true);
         }

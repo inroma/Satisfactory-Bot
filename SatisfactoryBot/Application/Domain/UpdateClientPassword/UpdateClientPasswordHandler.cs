@@ -1,19 +1,18 @@
-﻿namespace SatisfactoryBot.Application.Domain.RenameServer;
+﻿namespace SatisfactoryBot.Application.Domain.UpdateClientPassword;
 
 using MediatR;
 using Microsoft.Extensions.Logging;
 using SatisfactoryBot.Data.Repositories.Interfaces;
 using SatisfactoryBot.Services.Api;
 using SatisfactoryBot.Services.Api.Interfaces;
-using System;
 using System.Threading;
 using System.Threading.Tasks;
 
-internal class RenameServerHandler : IRequestHandler<RenameServerCommand, bool>
+internal class UpdateClientPasswordHandler : IRequestHandler<UpdateClientPasswordCommand, bool>
 {
     #region Private Properties
 
-    private readonly ILogger<RenameServerHandler> logger;
+    private readonly ILogger<UpdateClientPasswordHandler> logger;
     private ISatisfactoryClient satisfactoryClient;
     private readonly IDiscordServerRepository discordServerRepository;
 
@@ -21,7 +20,7 @@ internal class RenameServerHandler : IRequestHandler<RenameServerCommand, bool>
 
     #region Public Constructor
 
-    public RenameServerHandler(ILogger<RenameServerHandler> logger, IDiscordServerRepository serverRepository)
+    public UpdateClientPasswordHandler(ILogger<UpdateClientPasswordHandler> logger, IDiscordServerRepository serverRepository)
     {
         this.logger = logger;
         discordServerRepository = serverRepository;
@@ -29,7 +28,7 @@ internal class RenameServerHandler : IRequestHandler<RenameServerCommand, bool>
 
     #endregion Public Constructor
 
-    public async Task<bool> Handle(RenameServerCommand request, CancellationToken cancellationToken)
+    public async Task<bool> Handle(UpdateClientPasswordCommand request, CancellationToken cancellationToken)
     {
         try
         {
@@ -37,8 +36,7 @@ internal class RenameServerHandler : IRequestHandler<RenameServerCommand, bool>
             if (server != null)
             {
                 satisfactoryClient = new SatisfactoryClient(server.Url, server.Token);
-                await satisfactoryClient.RenameServer(request.Name);
-                return true;
+                return await satisfactoryClient.UpdateUserPassword(request.Password);
             }
         }
         catch (Exception ex)
