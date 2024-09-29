@@ -22,4 +22,6 @@ public interface ISatisfactoryClient
     Task<BaseResponse<OptionsResponse>> GetOptions();
 
     Task<BaseResponse<AdvancedGameSettingsResponse>> GetAdvancedGameSettings();
+
+    Task<bool> RenameServer(string newName);
 }

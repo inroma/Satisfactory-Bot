@@ -7,6 +7,7 @@ using SatisfactoryBot.Application.Domain.GetAdvancedGameSettings;
 using SatisfactoryBot.Application.Domain.GetHealth;
 using SatisfactoryBot.Application.Domain.GetOptions;
 using SatisfactoryBot.Application.Domain.GetState;
+using SatisfactoryBot.Application.Domain.RenameServer;
 using System.Text.Json;
 using System.Threading.Tasks;
 
@@ -80,7 +81,6 @@ public class SatisfactoryService : InteractionModuleBase<SocketInteractionContex
         }
     }
 
-
     [SlashCommand("asettings", "Get advanced game settings")]
     public async Task AdvancedGameSettings()
     {
@@ -88,6 +88,23 @@ public class SatisfactoryService : InteractionModuleBase<SocketInteractionContex
         try
         {
             var result = await mediatr.Send(new GetAdvancedGameSettingsQuery(Context.Guild.Id));
+
+            await RespondAsync(JsonSerializer.Serialize(result));
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error getting advanced game settings: {Ex}", ex.Message);
+            await RespondAsync("Error getting advanced game settings", ephemeral: true);
+        }
+    }
+
+    [SlashCommand("rename", "Rename the Satisfactory Server")]
+    public async Task RenameServer([Summary(description: "New server name to define")] string name)
+    {
+        logger.LogInformation("RenameServer command started");
+        try
+        {
+            var result = await mediatr.Send(new RenameServerCommand(Context.Guild.Id, name));
 
             await RespondAsync(JsonSerializer.Serialize(result));
         }

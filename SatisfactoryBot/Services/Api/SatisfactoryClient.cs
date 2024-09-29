@@ -66,7 +66,6 @@ public class SatisfactoryClient : ISatisfactoryClient
         var body = new BaseRequest<object>("VerifyAuthenticationToken");
         var request = new RestRequest().AddBody(body);
         var result = await client.PostAsync(request);
-        //CheckResponse(result.Data);
         // Api returns NoContent on token auth success
         if (result.StatusCode != System.Net.HttpStatusCode.NoContent)
         {
@@ -120,6 +119,18 @@ public class SatisfactoryClient : ISatisfactoryClient
         var result = await client.PostAsync<BaseResponse<AdvancedGameSettingsResponse>>(request);
         CheckResponse(result);
         return result;
+    }
+
+    public async Task<bool> RenameServer(string newName)
+    {
+        var body = new BaseRequest<RenameRequest>("RenameServer")
+        {
+            Data = new() { ServerName = newName }
+        };
+        var request = new RestRequest().AddBody(body);
+        var result = await client.PostAsync<BaseResponse<object>>(request);
+        CheckResponse(result);
+        return true;
     }
 
 
