@@ -24,7 +24,7 @@ public class DiscordServerRepository : GenericRepository<DiscordServer>, IDiscor
     public DiscordServer GetOrCreateDiscordServer(ulong guildId)
     {
         var discordRepository = unitOfWork.GetRepository<DiscordServer>();
-        var discordServer = discordRepository.GetFirstOrDefault(d => d.GuildId == guildId);
+        var discordServer = discordRepository.GetAll().FirstOrDefault(d => d.GuildId == guildId);
         if (discordServer == null)
         {
             discordServer = new DiscordServer()

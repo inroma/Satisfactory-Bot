@@ -57,6 +57,11 @@ public class ClaimSatisfactoryServerHandler : IRequestHandler<ClaimSatisfactoryS
                 Url = request.Url,
                 DiscordServer = discordServer
             };
+            if (discordServer.Id != default && unitOfWork.GetRepository<SatisfactoryServer>().GetFirstOrDefault(s =>
+                s.DiscordServerId == discordServer.Id && s.Token == satServer.Token) != null)
+            {
+                throw new Exception("Satisfactory server already registered on this Discord. Operation canceled.");
+            }
 
             unitOfWork.GetRepository<SatisfactoryServer>().Add(satServer);
             var result = unitOfWork.Save();
