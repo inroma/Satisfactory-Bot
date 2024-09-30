@@ -29,4 +29,6 @@ public interface ISatisfactoryClient
     Task<bool> UpdateAdminPassword(string password, string token);
 
     string GetServerNameWithUdp(IPEndPoint remoteAddress);
+
+    Task<BaseResponse<CommandResponse>> RunServerCommand(string command);
 }

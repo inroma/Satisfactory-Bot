@@ -177,6 +177,17 @@ public class SatisfactoryClient : ISatisfactoryClient
         return name;
     }
 
+    public async Task<BaseResponse<CommandResponse>> RunServerCommand(string command)
+    {
+        var body = new BaseRequest<CommandRequest>("RunCommand")
+        {
+            Data = new() { Command = command }
+        };
+        var request = new RestRequest().AddBody(body);
+        var result = await client.PostAsync<BaseResponse<CommandResponse>>(request);
+        return CheckResponse(result);
+    }
+
     #endregion Public Methods
 
     #region Private Methods

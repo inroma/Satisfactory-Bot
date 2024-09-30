@@ -8,6 +8,7 @@ using SatisfactoryBot.Application.Domain.GetHealth;
 using SatisfactoryBot.Application.Domain.GetOptions;
 using SatisfactoryBot.Application.Domain.GetState;
 using SatisfactoryBot.Application.Domain.RenameServer;
+using SatisfactoryBot.Application.Domain.RunCommand;
 using System.Text.Json;
 using System.Threading.Tasks;
 
@@ -112,6 +113,28 @@ public class SatisfactoryService : InteractionModuleBase<SocketInteractionContex
         {
             logger.LogError(ex, "Error getting advanced game settings: {Ex}", ex.Message);
             await RespondAsync("Error getting advanced game settings", ephemeral: true);
+        }
+    }
+
+    [SlashCommand("save", "Saves the current game")]
+    public async Task RunServerCommand(string saveName)
+    {
+        try
+        {
+            logger.LogInformation("Start saving game from User: {User}", Context.User.Id);
+            await DeferAsync();
+            var result = await mediatr.Send(new RunCommandCommand()
+            {
+                CommandName = "server.SaveGame",
+                Value = saveName,
+                GuildId = Context.Guild.Id
+            });
+            await FollowupAsync(JsonSerializer.Serialize(result));
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error executing server command server.SaveGame: {Ex}", ex.Message);
+            await FollowupAsync($"Error executing server command server.SaveGame: {ex.Message}");
         }
     }
 }
