@@ -3,11 +3,13 @@
 using Discord.Interactions;
 using MediatR;
 using Microsoft.Extensions.Logging;
+using SatisfactoryBot.Application.Domain.EnumerateSessions;
 using SatisfactoryBot.Application.Domain.GetAdvancedGameSettings;
 using SatisfactoryBot.Application.Domain.GetHealth;
 using SatisfactoryBot.Application.Domain.GetOptions;
 using SatisfactoryBot.Application.Domain.GetState;
 using SatisfactoryBot.Application.Domain.RenameServer;
+using SatisfactoryBot.Application.Domain.SetAutoLoadSessionName;
 using System.Text.Json;
 using System.Threading.Tasks;
 
@@ -112,6 +114,40 @@ public class SatisfactoryService : InteractionModuleBase<SocketInteractionContex
         {
             logger.LogError(ex, "Error getting advanced game settings: {Ex}", ex.Message);
             await RespondAsync("Error getting advanced game settings", ephemeral: true);
+        }
+    }
+
+    [SlashCommand("autoload", "Updates the name of the session that the Dedicated Server will automatically load on startup")]
+    public async Task SetAutoLoadSessionName([Summary(description: "Name of the session to automatically load on Dedicated Server startup")] string name)
+    {
+        logger.LogInformation("SetAutoLoadSessionName command started");
+        try
+        {
+            var result = await mediatr.Send(new SetAutoLoadSessionNameCommand(Context.Guild.Id, name));
+
+            await RespondAsync(JsonSerializer.Serialize(result));
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error setting autoload session: {Ex}", ex.Message);
+            await RespondAsync("Error setting autoload session", ephemeral: true);
+        }
+    }
+
+    [SlashCommand("sessions", "Enumerates all save game files available on the Dedicated Server")]
+    public async Task EnumerateSessions()
+    {
+        logger.LogInformation("EnumerateSessions command started");
+        try
+        {
+            var result = await mediatr.Send(new EnumerateSessionsCommand(Context.Guild.Id));
+
+            await RespondAsync(JsonSerializer.Serialize(result));
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error getting available save game files: {Ex}", ex.Message);
+            await RespondAsync("Error getting available save game files", ephemeral: true);
         }
     }
 }

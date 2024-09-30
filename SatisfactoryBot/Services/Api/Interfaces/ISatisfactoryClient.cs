@@ -28,5 +28,9 @@ public interface ISatisfactoryClient
 
     Task<bool> UpdateAdminPassword(string password, string token);
 
+    Task<bool> UpdateAutoLoadSessionName(string sessionName);
+
+    Task<BaseResponse<EnumerateSessionsResponse>> GetSessions();
+
     string GetServerNameWithUdp(IPEndPoint remoteAddress);
 }

@@ -177,6 +177,26 @@ public class SatisfactoryClient : ISatisfactoryClient
         return name;
     }
 
+    public async Task<bool> UpdateAutoLoadSessionName(string newName)
+    {
+        var body = new BaseRequest<SetAutoLoadSessionNameRequest>("SetAutoLoadSessionName")
+        {
+            Data = new() { SessionName = newName }
+        };
+        var request = new RestRequest().AddBody(body);
+        var result = await client.PostAsync<BaseResponse<object>>(request);
+        CheckResponse(result);
+        return true;
+    }
+    public async Task<BaseResponse<EnumerateSessionsResponse>> GetSessions()
+    {
+        var body = new BaseRequest<object>("EnumerateSessions");
+        var request = new RestRequest().AddBody(body);
+        var result = await client.PostAsync<BaseResponse<EnumerateSessionsResponse>>(request);
+        CheckResponse(result);
+        return result;
+    }
+
     #endregion Public Methods
 
     #region Private Methods
