@@ -12,6 +12,7 @@ using SatisfactoryBot.Services.Api.Interfaces;
 using SatisfactoryBot.Services.Api.Models.Misc;
 using SatisfactoryBot.Data.Repositories.Interfaces;
 using Microsoft.Extensions.Logging;
+using System.Net;
 
 public class ClaimSatisfactoryServerHandler : IRequestHandler<ClaimSatisfactoryServerCommand, bool>
 {
@@ -48,6 +49,9 @@ public class ClaimSatisfactoryServerHandler : IRequestHandler<ClaimSatisfactoryS
             else if (!string.IsNullOrEmpty(request.Token))
             {
                 await TokenAuthToSatisfactoryServer(request.Url, request.Token);
+                // if adding server with token, we retrieve the server name via Udp
+                var ip = GetRemoteAddressFromUrl(request.Url);
+                request.ServerName = client.GetServerNameWithUdp(ip);
             }
             if (request.Token != null)
             {
@@ -59,14 +63,13 @@ public class ClaimSatisfactoryServerHandler : IRequestHandler<ClaimSatisfactoryS
                     throw new Exception("Satisfactory server already registered on this Discord. Operation canceled.");
                 }
 
-                var satisfactoryInfos = await QueryServerState(request.Url, request.Token);
                 var isDefault = discordServer.SatisfactoryServers?.Count(s => s.IsDefaultServer) == 0;
                 var satServer = new SatisfactoryServer()
                 {
                     Owner = request.UserId,
                     Token = request.Token,
                     Url = request.Url,
-                    Name = satisfactoryInfos.ServerGameState.ActiveSessionName,
+                    Name = request.ServerName,
                     DiscordServer = discordServer,
                     IsDefaultServer = isDefault,
                 };
@@ -123,5 +126,11 @@ public class ClaimSatisfactoryServerHandler : IRequestHandler<ClaimSatisfactoryS
         {
             throw;
         }
+    }
+
+    private static IPEndPoint GetRemoteAddressFromUrl(string url)
+    {
+        var myUri = new Uri(url);
+        return new(Dns.GetHostAddresses(myUri.Host)[0], myUri.Port);
     }
 }

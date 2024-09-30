@@ -7,6 +7,8 @@ using SatisfactoryBot.Services.Api.Models;
 using SatisfactoryBot.Services.Api.Models.Misc;
 using SatisfactoryBot.Services.Api.Models.Requests;
 using SatisfactoryBot.Services.Api.Models.Responses;
+using System.Net.Sockets;
+using System.Net;
 
 public class SatisfactoryClient : ISatisfactoryClient
 {
@@ -154,6 +156,25 @@ public class SatisfactoryClient : ISatisfactoryClient
         var result = await client.PostAsync<BaseResponse<object>>(request);
         CheckResponse(result);
         return true;
+    }
+
+    public string GetServerNameWithUdp(IPEndPoint remoteAddress)
+    {
+        var client = new UdpClient();
+        client.Connect(remoteAddress);
+
+        var protocolMagic = BitConverter.GetBytes(0xF6D5);
+        byte messageType = 0x0;
+        byte protocol = 0x1;
+        var cookie = BitConverter.GetBytes(DateTime.Now.Ticks);
+
+        byte[] data = [.. protocolMagic, messageType, protocol, .. cookie, 0x1];
+        client.Send(data, data.Length);
+
+        var receivedData = client.Receive(ref remoteAddress);
+        var name = System.Text.Encoding.Default.GetString(receivedData).Split("\0").Last().Split("\u0001").First();
+
+        return name;
     }
 
     #endregion Public Methods

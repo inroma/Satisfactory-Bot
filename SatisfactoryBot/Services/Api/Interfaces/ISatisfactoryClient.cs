@@ -3,6 +3,7 @@
 using SatisfactoryBot.Services.Api.Models;
 using SatisfactoryBot.Services.Api.Models.Misc;
 using SatisfactoryBot.Services.Api.Models.Responses;
+using System.Net;
 using System.Threading.Tasks;
 
 public interface ISatisfactoryClient
@@ -26,4 +27,6 @@ public interface ISatisfactoryClient
     Task<bool> UpdateClientPassword(string password);
 
     Task<bool> UpdateAdminPassword(string password, string token);
+
+    string GetServerNameWithUdp(IPEndPoint remoteAddress);
 }
