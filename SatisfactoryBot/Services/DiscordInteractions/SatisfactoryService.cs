@@ -137,4 +137,71 @@ public class SatisfactoryService : InteractionModuleBase<SocketInteractionContex
             await FollowupAsync($"Error executing server command server.SaveGame: {ex.Message}");
         }
     }
+
+    [SlashCommand("auto-save", "Defines the Auto-save interval in seconds (default: 300)")]
+    public async Task AutoSaveIntervalCommand([MinValue(0), MaxValue(7200)] int interval)
+    {
+        try
+        {
+            logger.LogInformation("Start updating Auto-save setting from User: {User}", Context.User.Id);
+            await DeferAsync();
+            var result = await mediatr.Send(new RunCommandCommand()
+            {
+                CommandName = "FG.AutosaveInterval",
+                Value = interval,
+                GuildId = Context.Guild.Id
+            });
+            await FollowupAsync(JsonSerializer.Serialize(result));
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error updating Auto-save setting: {Ex}", ex.Message);
+            await FollowupAsync($"Error updating Auto-save setting: {ex.Message}");
+        }
+    }
+
+    [SlashCommand("event", "Enable/Disable in game FICSmas event")]
+    public async Task DisableInGameEvent([Choice("Enabled", 1), Choice("Disabled", 0)] int status)
+    {
+        try
+        {
+            logger.LogInformation("Updating in-game event from User: {User}", Context.User.Id);
+            await DeferAsync();
+            var result = await mediatr.Send(new RunCommandCommand()
+            {
+                CommandName = "FG.DisableSeasonalEvents",
+                Value = status,
+                GuildId = Context.Guild.Id
+            });
+            await FollowupAsync(JsonSerializer.Serialize(result));
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error updating in-game event: {Ex}", ex.Message);
+            await FollowupAsync($"Error updating in-game event: {ex.Message}");
+        }
+    }
+
+    [SlashCommand("network", "Changes the Network Quality Setting")]
+    public async Task UpdateNetworkQualityCommand(
+        [Choice("Low", 0), Choice("Medium", 1), Choice("High", 2), Choice("Ultra", 3)] int networkQuality)
+    {
+        try
+        {
+            logger.LogInformation("Start updating Network Quality from User: {User}", Context.User.Id);
+            await DeferAsync();
+            var result = await mediatr.Send(new RunCommandCommand()
+            {
+                CommandName = "FG.NetworkQuality",
+                Value = networkQuality,
+                GuildId = Context.Guild.Id
+            });
+            await FollowupAsync(JsonSerializer.Serialize(result));
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error updating Network Quality: {Ex}", ex.Message);
+            await FollowupAsync($"Error updating Network Quality: {ex.Message}");
+        }
+    }
 }
