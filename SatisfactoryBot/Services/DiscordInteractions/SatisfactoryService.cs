@@ -1,6 +1,7 @@
 ﻿namespace SatisfactoryBot.Services.DiscordInteractions;
 
 using Discord.Interactions;
+using Discord.WebSocket;
 using MediatR;
 using Microsoft.Extensions.Logging;
 using SatisfactoryBot.Application.Domain.GetAdvancedGameSettings;
@@ -9,6 +10,8 @@ using SatisfactoryBot.Application.Domain.GetOptions;
 using SatisfactoryBot.Application.Domain.GetState;
 using SatisfactoryBot.Application.Domain.RenameServer;
 using SatisfactoryBot.Application.Domain.RunCommand;
+using SatisfactoryBot.Application.Domain.Shutdown;
+using SatisfactoryBot.Helpers;
 using System.Text.Json;
 using System.Threading.Tasks;
 
@@ -204,4 +207,38 @@ public class SatisfactoryService : InteractionModuleBase<SocketInteractionContex
             await FollowupAsync($"Error updating Network Quality: {ex.Message}");
         }
     }
+
+    #region Shutdown
+
+    [SlashCommand("shutdown", "Shutdown the Satisfactory server, use with caution")]
+    public async Task ShutdownServer()
+    {
+        try
+        {
+            var buttons = ResponseHelper.CreateConfirmCancelButtons("shutdown");
+            await RespondAsync("Use with caution, if your server isn't configured to restart on shutdown, it will stay offline.", components: buttons);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error prompting warning for server shutdown: {Ex}", ex.Message);
+        }
+    }
+
+    [ComponentInteraction("shutdown-confirm")]
+    public async Task ConfirmShutdownServer()
+    {
+        try
+        {
+            logger.LogInformation("Start shutting down server from User: {User}", Context.User.Id);
+            var result = await mediatr.Send(new ShutdownCommand() { GuildId = Context.Guild.Id });
+            await RespondAsync(result ? "Shutdown initiated" : "Shutdown failed");
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error shutting down server: {Ex}", ex.Message);
+            await RespondAsync($"Error shutting down server: {ex.Message}");
+        }
+    }
+
+    #endregion Shutdown
 }

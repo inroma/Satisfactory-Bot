@@ -188,6 +188,14 @@ public class SatisfactoryClient : ISatisfactoryClient
         return CheckResponse(result);
     }
 
+    public async Task<BaseResponse<object>> Shutdown()
+    {
+        var body = new BaseRequest<object>("Shutdown");
+        var request = new RestRequest().AddBody(body);
+        var result = await client.PostAsync<BaseResponse<object>>(request);
+        return CheckResponse(result);
+    }
+
     #endregion Public Methods
 
     #region Private Methods

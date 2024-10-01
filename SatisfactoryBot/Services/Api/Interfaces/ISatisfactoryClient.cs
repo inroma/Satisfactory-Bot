@@ -31,4 +31,6 @@ public interface ISatisfactoryClient
     string GetServerNameWithUdp(IPEndPoint remoteAddress);
 
     Task<BaseResponse<CommandResponse>> RunServerCommand(string command);
+
+    Task<BaseResponse<object>> Shutdown();
 }
