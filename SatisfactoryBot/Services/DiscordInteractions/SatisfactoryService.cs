@@ -12,6 +12,7 @@ using SatisfactoryBot.Application.Domain.RenameServer;
 using SatisfactoryBot.Application.Domain.RunCommand;
 using SatisfactoryBot.Application.Domain.Shutdown;
 using SatisfactoryBot.Helpers;
+using SatisfactoryBot.Services.DiscordInteractions.Attributes;
 using System.Text.Json;
 using System.Threading.Tasks;
 
@@ -215,7 +216,7 @@ public class SatisfactoryService : InteractionModuleBase<SocketInteractionContex
     {
         try
         {
-            var buttons = ResponseHelper.CreateConfirmCancelButtons("shutdown");
+            var buttons = ResponseHelper.CreateConfirmCancelButtons("shutdown", Context.User.Id);
             await RespondAsync("Use with caution, if your server isn't configured to restart on shutdown, it will stay offline.", components: buttons);
         }
         catch (Exception ex)
@@ -224,14 +225,19 @@ public class SatisfactoryService : InteractionModuleBase<SocketInteractionContex
         }
     }
 
-    [ComponentInteraction("shutdown-confirm")]
+    [DoUserCheck]
+    [ComponentInteraction("shutdown-confirm:*")]
     public async Task ConfirmShutdownServer()
     {
         try
         {
             logger.LogInformation("Start shutting down server from User: {User}", Context.User.Id);
             var result = await mediatr.Send(new ShutdownCommand() { GuildId = Context.Guild.Id });
-            await RespondAsync(result ? "Shutdown initiated" : "Shutdown failed");
+            await (Context.Interaction as SocketMessageComponent).Message.ModifyAsync((a) =>
+            {
+                a.Content = result ? "Shutdown initiated" : "Shutdown failed";
+                a.Components = null;
+            });
         }
         catch (Exception ex)
         {
