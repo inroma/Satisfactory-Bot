@@ -126,49 +126,6 @@ public class SatisfactoryService : InteractionModuleBase<SocketInteractionContex
         }
     }
 
-    [SlashCommand("new-save", "Creates a new save file of the current game")]
-    public async Task SaveGame(string saveName)
-    {
-        try
-        {
-            logger.LogInformation("Start creating new save from User: {User}", Context.User.Id);
-            await DeferAsync();
-            var result = await mediatr.Send(new SaveGameCommand()
-            {
-                SaveName = saveName,
-                GuildId = Context.Guild.Id
-            });
-            await FollowupAsync(result ? "Save file created successfully" : "Failed to create a Save file 😕");
-        }
-        catch (Exception ex)
-        {
-            logger.LogError(ex, "Error creating new save: {Ex}", ex.Message);
-            await FollowupAsync($"Error: {ex.Message}");
-        }
-    }
-
-    [SlashCommand("auto-save", "Defines the Auto-save interval in seconds (default: 300)")]
-    public async Task AutoSaveIntervalCommand([MinValue(0), MaxValue(7200)] int interval)
-    {
-        try
-        {
-            logger.LogInformation("Start updating Auto-save setting from User: {User}", Context.User.Id);
-            await DeferAsync();
-            var result = await mediatr.Send(new RunCommandCommand()
-            {
-                CommandName = "FG.AutosaveInterval",
-                Value = interval,
-                GuildId = Context.Guild.Id
-            });
-            await FollowupAsync(JsonSerializer.Serialize(result));
-        }
-        catch (Exception ex)
-        {
-            logger.LogError(ex, "Error updating Auto-save setting: {Ex}", ex.Message);
-            await FollowupAsync($"Error updating Auto-save setting: {ex.Message}");
-        }
-    }
-
     [SlashCommand("event", "Enable/Disable in game FICSmas event")]
     public async Task DisableInGameEvent([Choice("Enabled", 1), Choice("Disabled", 0)] int status)
     {
@@ -281,8 +238,10 @@ public class SatisfactoryService : InteractionModuleBase<SocketInteractionContex
         }
     }
 
+    #region Save
+
     [SlashCommand("save", "Saves the current game")]
-    public async Task RunServerCommand(string saveName)
+    public async Task RunCommandSave(string saveName)
     {
         try
         {
@@ -304,7 +263,7 @@ public class SatisfactoryService : InteractionModuleBase<SocketInteractionContex
     }
 
     [SlashCommand("delete-save-file", "Deletes the specified save file")]
-    public async Task DeleteSave([Summary(description: "save filename to delete")] string fileName)
+    public async Task DeleteSaveFile([Summary(description: "save filename to delete")] string fileName)
     {
         try
         {
@@ -344,4 +303,49 @@ public class SatisfactoryService : InteractionModuleBase<SocketInteractionContex
             await FollowupAsync($"Error deleting session: {ex.Message}");
         }
     }
+
+    [SlashCommand("new-save", "Creates a new save file of the current game")]
+    public async Task SaveGame(string saveName)
+    {
+        try
+        {
+            logger.LogInformation("Start creating new save from User: {User}", Context.User.Id);
+            await DeferAsync();
+            var result = await mediatr.Send(new SaveGameCommand()
+            {
+                SaveName = saveName,
+                GuildId = Context.Guild.Id
+            });
+            await FollowupAsync(result ? "Save file created successfully" : "Failed to create a Save file 😕");
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error creating new save: {Ex}", ex.Message);
+            await FollowupAsync($"Error: {ex.Message}");
+        }
+    }
+
+    [SlashCommand("auto-save", "Defines the Auto-save interval in seconds (default: 300)")]
+    public async Task AutoSaveIntervalCommand([MinValue(0), MaxValue(7200)] int interval)
+    {
+        try
+        {
+            logger.LogInformation("Start updating Auto-save setting from User: {User}", Context.User.Id);
+            await DeferAsync();
+            var result = await mediatr.Send(new RunCommandCommand()
+            {
+                CommandName = "FG.AutosaveInterval",
+                Value = interval,
+                GuildId = Context.Guild.Id
+            });
+            await FollowupAsync(JsonSerializer.Serialize(result));
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error updating Auto-save setting: {Ex}", ex.Message);
+            await FollowupAsync($"Error updating Auto-save setting: {ex.Message}");
+        }
+    }
+
+    #endregion Save
 }
