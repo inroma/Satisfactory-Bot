@@ -281,6 +281,28 @@ public class SatisfactoryService : InteractionModuleBase<SocketInteractionContex
         }
     }
 
+    [SlashCommand("save", "Saves the current game")]
+    public async Task RunServerCommand(string saveName)
+    {
+        try
+        {
+            logger.LogInformation("Start saving game from User: {User}", Context.User.Id);
+            await DeferAsync();
+            var result = await mediatr.Send(new RunCommandCommand()
+            {
+                CommandName = "server.SaveGame",
+                Value = saveName,
+                GuildId = Context.Guild.Id
+            });
+            await FollowupAsync(JsonSerializer.Serialize(result));
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error executing server command server.SaveGame: {Ex}", ex.Message);
+            await FollowupAsync($"Error executing server command server.SaveGame: {ex.Message}");
+        }
+    }
+
     [SlashCommand("delete-save-file", "Deletes the specified save file")]
     public async Task DeleteSave([Summary(description: "save filename to delete")] string fileName)
     {
