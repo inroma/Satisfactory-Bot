@@ -41,4 +41,6 @@ public interface ISatisfactoryClient
     Task<BaseResponse<object>> DeleteSaveFile(string fileName);
 
     Task<BaseResponse<object>> DeleteSessionSave(string sessionName);
+
+    Task<BaseResponse<object>> LoadGame(string saveName, bool enableAdvancedFeatures);
 }

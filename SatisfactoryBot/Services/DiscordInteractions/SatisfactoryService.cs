@@ -10,6 +10,7 @@ using SatisfactoryBot.Application.Domain.GetAdvancedGameSettings;
 using SatisfactoryBot.Application.Domain.GetHealth;
 using SatisfactoryBot.Application.Domain.GetOptions;
 using SatisfactoryBot.Application.Domain.GetState;
+using SatisfactoryBot.Application.Domain.LoadGame;
 using SatisfactoryBot.Application.Domain.NewGame;
 using SatisfactoryBot.Application.Domain.RenameServer;
 using SatisfactoryBot.Application.Domain.RunCommand;
@@ -348,4 +349,29 @@ public class SatisfactoryService : InteractionModuleBase<SocketInteractionContex
     }
 
     #endregion Save
+
+    [SlashCommand("load", "Loads the save game file by name")]
+    public async Task LoadGame(
+        [Summary(description: "Name of the save game file to load"), MinLength(3)] string saveName,
+        [Summary(description: "True if save game file should be loaded with Advanced Game Settings enabled")] bool advancedSettings = false)
+    {
+        logger.LogInformation("Start loading game from User: {User}", Context.User.Id);
+        try
+        {
+            var result = await mediatr.Send(new LoadGameCommand()
+            {
+                GuildId = Context.Guild.Id,
+                SaveName = saveName,
+                EnableAdvancedGameSettings = advancedSettings
+            });
+
+            await RespondAsync(JsonSerializer.Serialize(result));
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error loading game: {Ex}", ex.Message);
+            await RespondAsync("Error loading game", ephemeral: true);
+        }
+    }
+
 }
