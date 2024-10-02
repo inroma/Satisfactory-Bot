@@ -251,8 +251,6 @@ public class SatisfactoryService : InteractionModuleBase<SocketInteractionContex
 
     #endregion Shutdown
 
-    #region New Game
-
     [SlashCommand("new-game", "Creates a new game")]
     public async Task CreateNewGame(
         [Summary("Session-Name"), MinLength(3), MaxLength(80)] string sessionName,
@@ -281,5 +279,4 @@ public class SatisfactoryService : InteractionModuleBase<SocketInteractionContex
         }
     }
 
-    #endregion New Game
 }
