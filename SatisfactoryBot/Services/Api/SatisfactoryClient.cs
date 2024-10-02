@@ -263,6 +263,18 @@ public class SatisfactoryClient : ISatisfactoryClient
         return CheckResponse(result);
     }
 
+    public async Task<byte[]> DownloadSave(string fileName)
+    {
+        var body = new BaseRequest<SaveGameRequest>("DownloadSaveGame")
+        {
+            Data = new() { SaveName = fileName }
+        };
+        var request = new RestRequest("", Method.Post).AddBody(body);
+        var result = await client.ExecuteAsync<BaseResponse<object>>(request);
+        CheckResponse(result?.Data);
+        return result.RawBytes;
+    }
+
     #endregion Public Methods
 
     #region Private Methods

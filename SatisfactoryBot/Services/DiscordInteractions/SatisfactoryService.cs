@@ -6,6 +6,7 @@ using MediatR;
 using Microsoft.Extensions.Logging;
 using SatisfactoryBot.Application.Domain.DeleteSave;
 using SatisfactoryBot.Application.Domain.DeleteSaveSession;
+using SatisfactoryBot.Application.Domain.DownloadSaveGame;
 using SatisfactoryBot.Application.Domain.GetAdvancedGameSettings;
 using SatisfactoryBot.Application.Domain.GetHealth;
 using SatisfactoryBot.Application.Domain.GetOptions;
@@ -371,6 +372,31 @@ public class SatisfactoryService : InteractionModuleBase<SocketInteractionContex
         {
             logger.LogError(ex, "Error loading game: {Ex}", ex.Message);
             await RespondAsync("Error loading game", ephemeral: true);
+        }
+    }
+
+    [SlashCommand("download", "Downloads save game with the given name from the Dedicated Server.")]
+    public async Task DownloadSaveFile(
+        [Summary(description: "Name of the save game file to download from the Dedicated Server")] string fileName)
+    {
+        try
+        {
+            logger.LogInformation("Downloading save from User: {User}", Context.User.Id);
+            await DeferAsync();
+            var result = await mediatr.Send(new DownloadSaveGameCommand()
+            {
+                GuildId = Context.Guild.Id,
+                SaveName = fileName,
+            });
+            var stream = new MemoryStream();
+            await stream.WriteAsync(result);
+            await FollowupWithFileAsync(stream, fileName);
+            await stream.DisposeAsync();
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error downloading save: {Ex}", ex.Message);
+            await FollowupAsync($"Error downloading save: {ex.Message}");
         }
     }
 
