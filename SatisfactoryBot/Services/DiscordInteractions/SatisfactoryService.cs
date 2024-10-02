@@ -11,6 +11,7 @@ using SatisfactoryBot.Application.Domain.GetState;
 using SatisfactoryBot.Application.Domain.NewGame;
 using SatisfactoryBot.Application.Domain.RenameServer;
 using SatisfactoryBot.Application.Domain.RunCommand;
+using SatisfactoryBot.Application.Domain.SaveGame;
 using SatisfactoryBot.Application.Domain.Shutdown;
 using SatisfactoryBot.Helpers;
 using SatisfactoryBot.Models.Enums;
@@ -124,24 +125,23 @@ public class SatisfactoryService : InteractionModuleBase<SocketInteractionContex
     }
 
     [SlashCommand("save", "Saves the current game")]
-    public async Task RunServerCommand(string saveName)
+    public async Task SaveGame(string saveName)
     {
         try
         {
             logger.LogInformation("Start saving game from User: {User}", Context.User.Id);
             await DeferAsync();
-            var result = await mediatr.Send(new RunCommandCommand()
+            var result = await mediatr.Send(new SaveGameCommand()
             {
-                CommandName = "server.SaveGame",
-                Value = saveName,
+                SaveName = saveName,
                 GuildId = Context.Guild.Id
             });
-            await FollowupAsync(JsonSerializer.Serialize(result));
+            await FollowupAsync(result ? "Session successfully saved" : "Failed to save Session 😕");
         }
         catch (Exception ex)
         {
-            logger.LogError(ex, "Error executing server command server.SaveGame: {Ex}", ex.Message);
-            await FollowupAsync($"Error executing server command server.SaveGame: {ex.Message}");
+            logger.LogError(ex, "Error saving game: {Ex}", ex.Message);
+            await FollowupAsync($"Error: {ex.Message}");
         }
     }
 

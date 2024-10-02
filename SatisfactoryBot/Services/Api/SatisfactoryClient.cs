@@ -215,6 +215,17 @@ public class SatisfactoryClient : ISatisfactoryClient
         return CheckResponse(result);
     }
 
+    public async Task<BaseResponse<object>> SaveGame(string saveName)
+    {
+        var body = new BaseRequest<SaveGameRequest>("SaveGame")
+        {
+            Data = new() { SaveName = saveName }
+        };
+        var request = new RestRequest().AddBody(body);
+        var result = await client.PostAsync<BaseResponse<object>>(request);
+        return CheckResponse(result);
+    }
+
     #endregion Public Methods
 
     #region Private Methods
