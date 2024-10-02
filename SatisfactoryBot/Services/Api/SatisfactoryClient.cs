@@ -226,11 +226,11 @@ public class SatisfactoryClient : ISatisfactoryClient
         return CheckResponse(result);
     }
 
-    public async Task<BaseResponse<object>> DeleteSave(string saveName)
+    public async Task<BaseResponse<object>> DeleteSaveFile(string fileName)
     {
         var body = new BaseRequest<SaveGameRequest>("DeleteSaveFile")
         {
-            Data = new() { SaveName = saveName }
+            Data = new() { SaveName = fileName }
         };
         var request = new RestRequest().AddBody(body);
         var result = await client.PostAsync<BaseResponse<object>>(request);

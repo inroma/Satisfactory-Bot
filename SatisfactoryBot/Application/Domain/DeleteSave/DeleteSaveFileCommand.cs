@@ -2,7 +2,7 @@
 
 using MediatR;
 
-public class DeleteSaveCommand : IRequest<bool>
+public class DeleteSaveFileCommand : IRequest<bool>
 {
     public ulong GuildId { get; set; }
 

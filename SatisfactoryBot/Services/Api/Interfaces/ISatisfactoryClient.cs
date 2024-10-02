@@ -38,5 +38,5 @@ public interface ISatisfactoryClient
 
     Task<BaseResponse<object>> SaveGame(string saveName);
 
-    Task<BaseResponse<object>> DeleteSave(string saveName);
+    Task<BaseResponse<object>> DeleteSaveFile(string fileName);
 }

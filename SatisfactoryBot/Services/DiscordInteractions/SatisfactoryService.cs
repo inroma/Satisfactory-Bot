@@ -280,24 +280,24 @@ public class SatisfactoryService : InteractionModuleBase<SocketInteractionContex
         }
     }
 
-    [SlashCommand("delete-save", "Deletes the specified session save")]
+    [SlashCommand("delete-save-file", "Deletes the specified save file")]
     public async Task DeleteSave([Summary(description: "save name to delete")] string saveName)
     {
         try
         {
-            logger.LogInformation("Start deleting save from User: {User}", Context.User.Id);
+            logger.LogInformation("Start deleting save file from User: {User}", Context.User.Id);
             await DeferAsync();
-            var result = await mediatr.Send(new DeleteSaveCommand()
+            var result = await mediatr.Send(new DeleteSaveFileCommand()
             {
                 SaveName = saveName,
                 GuildId = Context.Guild.Id
             });
-            await FollowupAsync(result ? "Save deleted successfully" : "Failed to delete save");
+            await FollowupAsync(result ? "Save file deleted successfully" : "Failed to delete save file");
         }
         catch (Exception ex)
         {
-            logger.LogError(ex, "Error deleting save: {Ex}", ex.Message);
-            await FollowupAsync($"Error deleting save: {ex.Message}");
+            logger.LogError(ex, "Error deleting save file: {Ex}", ex.Message);
+            await FollowupAsync($"Error deleting save file: {ex.Message}");
         }
     }
 }

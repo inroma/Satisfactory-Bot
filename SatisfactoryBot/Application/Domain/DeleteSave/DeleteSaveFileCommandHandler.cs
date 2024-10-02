@@ -8,11 +8,11 @@ using SatisfactoryBot.Services.Api.Interfaces;
 using System.Threading;
 using System.Threading.Tasks;
 
-internal class DeleteSaveCommandHandler : IRequestHandler<DeleteSaveCommand, bool>
+internal class DeleteSaveFileCommandHandler : IRequestHandler<DeleteSaveFileCommand, bool>
 {
     #region Private Properties
 
-    private readonly ILogger<DeleteSaveCommandHandler> logger;
+    private readonly ILogger<DeleteSaveFileCommandHandler> logger;
     private ISatisfactoryClient client;
     private readonly IDiscordServerRepository discordServerRepository;
 
@@ -20,7 +20,7 @@ internal class DeleteSaveCommandHandler : IRequestHandler<DeleteSaveCommand, boo
 
     #region Public Constructor
 
-    public DeleteSaveCommandHandler(ILogger<DeleteSaveCommandHandler> logger, IDiscordServerRepository serverRepository)
+    public DeleteSaveFileCommandHandler(ILogger<DeleteSaveFileCommandHandler> logger, IDiscordServerRepository serverRepository)
     {
         this.logger = logger;
         discordServerRepository = serverRepository;
@@ -28,13 +28,13 @@ internal class DeleteSaveCommandHandler : IRequestHandler<DeleteSaveCommand, boo
 
     #endregion Public Constructor
 
-    public async Task<bool> Handle(DeleteSaveCommand request, CancellationToken cancellationToken)
+    public async Task<bool> Handle(DeleteSaveFileCommand request, CancellationToken cancellationToken)
     {
         try
         {
             var server = discordServerRepository.GetActiveSatisfactoryFromDiscordGuildId(request.GuildId);
             client = new SatisfactoryClient(server.Url, server.Token);
-            var result = await client.DeleteSave(request.SaveName);
+            var result = await client.DeleteSaveFile(request.SaveName);
             return true;
         }
         catch (Exception ex)
