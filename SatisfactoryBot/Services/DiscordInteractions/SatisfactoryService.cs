@@ -5,6 +5,7 @@ using Discord.WebSocket;
 using MediatR;
 using Microsoft.Extensions.Logging;
 using SatisfactoryBot.Application.Domain.DeleteSave;
+using SatisfactoryBot.Application.Domain.DeleteSaveSession;
 using SatisfactoryBot.Application.Domain.GetAdvancedGameSettings;
 using SatisfactoryBot.Application.Domain.GetHealth;
 using SatisfactoryBot.Application.Domain.GetOptions;
@@ -298,6 +299,27 @@ public class SatisfactoryService : InteractionModuleBase<SocketInteractionContex
         {
             logger.LogError(ex, "Error deleting save file: {Ex}", ex.Message);
             await FollowupAsync($"Error deleting save file: {ex.Message}");
+        }
+    }
+
+    [SlashCommand("delete-save-session", "Deletes all save files belonging to the specific session name")]
+    public async Task DeleteSaveSession([Summary(description: "session name to delete")] string session)
+    {
+        try
+        {
+            logger.LogInformation("Start deleting session from User: {User}", Context.User.Id);
+            await DeferAsync();
+            var result = await mediatr.Send(new DeleteSaveSessionCommand()
+            {
+                SessionName = session,
+                GuildId = Context.Guild.Id
+            });
+            await FollowupAsync(result ? "Session deleted successfully" : "Failed to delete Session");
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error deleting session: {Ex}", ex.Message);
+            await FollowupAsync($"Error deleting session: {ex.Message}");
         }
     }
 }

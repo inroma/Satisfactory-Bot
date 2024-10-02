@@ -236,6 +236,16 @@ public class SatisfactoryClient : ISatisfactoryClient
         var result = await client.PostAsync<BaseResponse<object>>(request);
         return CheckResponse(result);
     }
+    public async Task<BaseResponse<object>> DeleteSessionSave(string sessionName)
+    {
+        var body = new BaseRequest<DeleteSaveRequest>("DeleteSaveSession")
+        {
+            Data = new() { SessionName = sessionName }
+        };
+        var request = new RestRequest().AddBody(body);
+        var result = await client.PostAsync<BaseResponse<object>>(request);
+        return CheckResponse(result);
+    }
 
     #endregion Public Methods
 
