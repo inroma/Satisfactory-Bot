@@ -33,4 +33,6 @@ public interface ISatisfactoryClient
     Task<BaseResponse<CommandResponse>> RunServerCommand(string command);
 
     Task<BaseResponse<object>> Shutdown();
+
+    Task<BaseResponse<object>> CreateNewGame(string sessionName, string startLocation, bool skipOnboarding);
 }

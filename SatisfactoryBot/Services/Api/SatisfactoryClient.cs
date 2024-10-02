@@ -196,6 +196,25 @@ public class SatisfactoryClient : ISatisfactoryClient
         return CheckResponse(result);
     }
 
+    public async Task<BaseResponse<object>> CreateNewGame(string sessionName, string startLocation, bool skipOnboarding)
+    {
+        var body = new BaseRequest<CreateNewGameRequest>("CreateNewGame")
+        {
+            Data = new()
+            {
+                NewGameData = new()
+                {
+                    SessionName = sessionName,
+                    SkipOnboarding = skipOnboarding,
+                    StartingLocation = startLocation
+                }
+            }
+        };
+        var request = new RestRequest().AddBody(body);
+        var result = await client.PostAsync<BaseResponse<object>>(request);
+        return CheckResponse(result);
+    }
+
     #endregion Public Methods
 
     #region Private Methods

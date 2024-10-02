@@ -8,10 +8,13 @@ using SatisfactoryBot.Application.Domain.GetAdvancedGameSettings;
 using SatisfactoryBot.Application.Domain.GetHealth;
 using SatisfactoryBot.Application.Domain.GetOptions;
 using SatisfactoryBot.Application.Domain.GetState;
+using SatisfactoryBot.Application.Domain.NewGame;
 using SatisfactoryBot.Application.Domain.RenameServer;
 using SatisfactoryBot.Application.Domain.RunCommand;
 using SatisfactoryBot.Application.Domain.Shutdown;
 using SatisfactoryBot.Helpers;
+using SatisfactoryBot.Models.Enums;
+using SatisfactoryBot.Models.Modals;
 using SatisfactoryBot.Services.DiscordInteractions.Attributes;
 using System.Text.Json;
 using System.Threading.Tasks;
@@ -247,4 +250,36 @@ public class SatisfactoryService : InteractionModuleBase<SocketInteractionContex
     }
 
     #endregion Shutdown
+
+    #region New Game
+
+    [SlashCommand("new-game", "Creates a new game")]
+    public async Task CreateNewGame(
+        [Summary("Session-Name"), MinLength(3), MaxLength(80)] string sessionName,
+        [Summary("Start-Location"), Choice("⛺ Grass Fields", "Grass Fields"),
+            Choice("🗿 Rocky Desert", "Rocky Desert"),
+            Choice("🌲 Northern Forest", "Northern Forest"),
+            Choice("🌵 Dune Desert", "Dune Desert")] string startLocation,
+        [Summary("Skip-Onboarding")] bool skipOnboarding = true)
+    {
+        try
+        {
+            logger.LogInformation("Game creation started by {UserId}", Context.User.Id);
+            await DeferAsync();
+            var result = await mediatr.Send(new NewGameCommand()
+            {
+                SessionName = sessionName,
+                StartLocation = startLocation,
+                SkipOnboarding = skipOnboarding,
+                GuildId = Context.Guild.Id
+            });
+            await FollowupAsync(result ? "Game created succesfuly! Wait 2 minutes for the session to start." : "Game creation failed 😕");
+        }
+        catch (Exception e)
+        {
+            logger.LogError(e, "Create new game error: {Ex}", e.Message);
+        }
+    }
+
+    #endregion New Game
 }
