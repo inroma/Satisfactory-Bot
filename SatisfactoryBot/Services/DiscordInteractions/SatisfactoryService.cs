@@ -125,23 +125,23 @@ public class SatisfactoryService : InteractionModuleBase<SocketInteractionContex
         }
     }
 
-    [SlashCommand("save", "Saves the current game")]
+    [SlashCommand("new-save", "Creates a new save file of the current game")]
     public async Task SaveGame(string saveName)
     {
         try
         {
-            logger.LogInformation("Start saving game from User: {User}", Context.User.Id);
+            logger.LogInformation("Start creating new save from User: {User}", Context.User.Id);
             await DeferAsync();
             var result = await mediatr.Send(new SaveGameCommand()
             {
                 SaveName = saveName,
                 GuildId = Context.Guild.Id
             });
-            await FollowupAsync(result ? "Session successfully saved" : "Failed to save Session 😕");
+            await FollowupAsync(result ? "Save file created successfully" : "Failed to create a Save file 😕");
         }
         catch (Exception ex)
         {
-            logger.LogError(ex, "Error saving game: {Ex}", ex.Message);
+            logger.LogError(ex, "Error creating new save: {Ex}", ex.Message);
             await FollowupAsync($"Error: {ex.Message}");
         }
     }
