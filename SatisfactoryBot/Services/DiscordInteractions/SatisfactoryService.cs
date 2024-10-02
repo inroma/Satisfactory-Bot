@@ -281,7 +281,7 @@ public class SatisfactoryService : InteractionModuleBase<SocketInteractionContex
     }
 
     [SlashCommand("delete-save-file", "Deletes the specified save file")]
-    public async Task DeleteSave([Summary(description: "save name to delete")] string saveName)
+    public async Task DeleteSave([Summary(description: "save filename to delete")] string fileName)
     {
         try
         {
@@ -289,7 +289,7 @@ public class SatisfactoryService : InteractionModuleBase<SocketInteractionContex
             await DeferAsync();
             var result = await mediatr.Send(new DeleteSaveFileCommand()
             {
-                SaveName = saveName,
+                SaveName = fileName,
                 GuildId = Context.Guild.Id
             });
             await FollowupAsync(result ? "Save file deleted successfully" : "Failed to delete save file");
