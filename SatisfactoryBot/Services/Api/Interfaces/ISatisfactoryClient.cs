@@ -37,4 +37,6 @@ public interface ISatisfactoryClient
     Task<BaseResponse<object>> CreateNewGame(string sessionName, string startLocation, bool skipOnboarding);
 
     Task<BaseResponse<object>> SaveGame(string saveName);
+
+    Task<BaseResponse<object>> DeleteSave(string saveName);
 }
