@@ -1,5 +1,6 @@
 ﻿namespace SatisfactoryBot.Services.DiscordInteractions;
 
+using Discord;
 using Discord.Interactions;
 using Discord.WebSocket;
 using MediatR;
@@ -17,9 +18,8 @@ using SatisfactoryBot.Application.Domain.RenameServer;
 using SatisfactoryBot.Application.Domain.RunCommand;
 using SatisfactoryBot.Application.Domain.SaveGame;
 using SatisfactoryBot.Application.Domain.Shutdown;
+using SatisfactoryBot.Application.Domain.UploadSaveGame;
 using SatisfactoryBot.Helpers;
-using SatisfactoryBot.Models.Enums;
-using SatisfactoryBot.Models.Modals;
 using SatisfactoryBot.Services.DiscordInteractions.Attributes;
 using System.Text.Json;
 using System.Threading.Tasks;
@@ -400,4 +400,32 @@ public class SatisfactoryService : InteractionModuleBase<SocketInteractionContex
         }
     }
 
+    [SlashCommand("upload", "Uploads save game file to the Dedicated Server with the given name.")]
+    public async Task UploadSaveFile(
+        IAttachment file,
+        [Summary(description: "Name of the save game file to create on the Dedicated Server")] string saveName,
+        [Summary(description: "True if save game file should be immediately loaded by the Dedicated Server")] bool load,
+        [Summary(description: "True if save game file should be loaded with Advanced Game Settings enabled")] bool advancedSettings)
+    {
+        try
+        {
+            logger.LogInformation("Uploading save from User: {User}", Context.User.Id);
+            await DeferAsync();
+            var result = await mediatr.Send(new UploadSaveGameCommand()
+            {
+                GuildId = Context.Guild.Id,
+                SaveName = saveName ?? file.Filename,
+                LoadSaveGame = load,
+                EnableAdvancedGameSettings = advancedSettings,
+                File = file
+            });
+            var resultStringSuccess = $"Save uploaded {(advancedSettings ? "with advanced settings" : "")}{(load ? "and is being loaded by the server" : "")}!";
+            await FollowupAsync(result ? resultStringSuccess : "File upload failed.");
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error uploading save: {Ex}", ex.Message);
+            await FollowupAsync($"Error uploading save: {ex.Message}");
+        }
+    }
 }

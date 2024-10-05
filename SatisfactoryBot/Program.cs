@@ -30,10 +30,8 @@ internal class Program
         var config = new DiscordSocketConfig
         {
             //AlwaysDownloadUsers = true,
-            GatewayIntents =
-                GatewayIntents.Guilds |
-                //GatewayIntents.GuildMembers |
-                GatewayIntents.DirectMessages
+            GatewayIntents = GatewayIntents.Guilds | GatewayIntents.GuildWebhooks | GatewayIntents.GuildMessages | GatewayIntents.DirectMessages |
+            GatewayIntents.MessageContent // | GatewayIntents.GuildMembers
         };
 
         services.Configure<GlobalSettings>(configuration)

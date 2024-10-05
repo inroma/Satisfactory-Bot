@@ -45,4 +45,6 @@ public interface ISatisfactoryClient
     Task<BaseResponse<object>> LoadGame(string saveName, bool enableAdvancedFeatures);
 
     Task<byte[]> DownloadSave(string saveName);
+
+    Task<BaseResponse<object>> UploadSave(byte[] data, string saveName, bool load, bool enableAdvancedSettings);
 }

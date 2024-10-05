@@ -275,6 +275,24 @@ public class SatisfactoryClient : ISatisfactoryClient
         return result.RawBytes;
     }
 
+    public async Task<BaseResponse<object>> UploadSave(byte[] data, string saveName, bool load, bool enableAdvancedSettings)
+    {
+        var body = new BaseRequest<SaveGameFile>("UploadSaveGame")
+        {
+            Data = new()
+            {
+                SaveName = saveName,
+                LoadSaveGame = load,
+                EnableAdvancedGameSettings = enableAdvancedSettings
+            }
+        };
+        var request = new RestRequest("", Method.Post)
+            .AddFile("saveGameFile", data, saveName)
+            .AddBody(body);
+        var result = await client.ExecuteAsync<BaseResponse<object>>(request);
+        return CheckResponse(result?.Data);
+    }
+
     #endregion Public Methods
 
     #region Private Methods
