@@ -1,5 +1,6 @@
 ﻿namespace SatisfactoryBot.Services.DiscordInteractions;
 
+using Discord;
 using Discord.Interactions;
 using MediatR;
 using Microsoft.Extensions.Logging;
@@ -8,10 +9,16 @@ using SatisfactoryBot.Application.Domain.GetAdvancedGameSettings;
 using SatisfactoryBot.Application.Domain.GetHealth;
 using SatisfactoryBot.Application.Domain.GetOptions;
 using SatisfactoryBot.Application.Domain.GetState;
+using SatisfactoryBot.Application.Domain.ListServers;
 using SatisfactoryBot.Application.Domain.RenameServer;
 using SatisfactoryBot.Application.Domain.SetAutoLoadSessionName;
+using SatisfactoryBot.Data.Models;
+using SatisfactoryBot.Services.Api.Models.Responses;
 using System.Text.Json;
 using System.Threading.Tasks;
+using System.Linq;
+using SatisfactoryBot.Services.Api.Models;
+using SatisfactoryBot.Application.Domain.UpdateActiveServer;
 
 public class SatisfactoryService : InteractionModuleBase<SocketInteractionContext>
 {
@@ -118,14 +125,15 @@ public class SatisfactoryService : InteractionModuleBase<SocketInteractionContex
     }
 
     [SlashCommand("autoload", "Updates the name of the session that the Dedicated Server will automatically load on startup")]
-    public async Task SetAutoLoadSessionName([Summary(description: "Name of the session to automatically load on Dedicated Server startup")] string name)
+    public async Task SetAutoLoadSessionName() //[Summary(description: "Name of the session to automatically load on Dedicated Server startup")] string name
     {
         logger.LogInformation("SetAutoLoadSessionName command started");
         try
         {
-            var result = await mediatr.Send(new SetAutoLoadSessionNameCommand(Context.Guild.Id, name));
-
-            await RespondAsync(JsonSerializer.Serialize(result));
+            var result = await mediatr.Send(new EnumerateSessionsCommand(Context.Guild.Id));
+            var menu = CreateSelectMenu(result);
+            var builder = new ComponentBuilder().WithSelectMenu(menu);
+            await RespondAsync("Satisfactory auto-load session", components: builder.Build(), ephemeral: true);
         }
         catch (Exception ex)
         {
@@ -148,6 +156,43 @@ public class SatisfactoryService : InteractionModuleBase<SocketInteractionContex
         {
             logger.LogError(ex, "Error getting available save game files: {Ex}", ex.Message);
             await RespondAsync("Error getting available save game files", ephemeral: true);
+        }
+    }
+
+    private static SelectMenuBuilder CreateSelectMenu(BaseResponse<EnumerateSessionsResponse> response)
+    {
+        var menuBuilder = new SelectMenuBuilder()
+        {
+            CustomId = "autoload-session",
+            MaxValues = 1,
+            MinValues = 1
+        };
+        foreach (var (value, i) in response.Data.Sessions.Select((Value, i) => (Value, i)))
+        {
+            menuBuilder.AddOption(new()
+            {
+                Label = value.SessionName,
+                Description = value.SaveHeaders.LastOrDefault().SaveName,
+                Value = value.SessionName,
+                IsDefault = (i == response.Data.CurrentSessionIndex)
+            });
+        };
+        return menuBuilder;
+    }
+
+    [ComponentInteraction("autoload-session")]
+    public async Task UpdateActiveServer(string[] selectedValues)
+    {
+        try
+        {
+            logger.LogInformation("updating autoload session {ServerId}", Context.Guild.Id);
+            await DeferAsync();
+            var result = await mediatr.Send(new SetAutoLoadSessionNameCommand(Context.Guild.Id, selectedValues[0]));
+            await Context.Interaction.DeferAsync();
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error changing autoload session. {Ex}", ex.Message);
         }
     }
 }
