@@ -485,7 +485,7 @@ public class SatisfactoryService : InteractionModuleBase<SocketInteractionContex
             logger.LogInformation("updating autoload session {ServerId}", Context.Guild.Id);
             await DeferAsync();
             var result = await mediatr.Send(new SetAutoLoadSessionNameCommand(Context.Guild.Id, selectedValues[0]));
-            await Context.Interaction.DeferAsync();
+            await Task.FromResult(result);
         }
         catch (Exception ex)
         {

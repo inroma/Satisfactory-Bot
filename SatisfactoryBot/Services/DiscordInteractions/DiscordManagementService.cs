@@ -55,7 +55,7 @@ public class DiscordManagementService : InteractionModuleBase<SocketInteractionC
             logger.LogInformation("updating active server {ServerId}", Context.Guild.Id);
             await DeferAsync();
             var result = await mediatr.Send(new UpdateActiveServerCommand(Context.Guild.Id, Convert.ToInt32(selectedValues[0])));
-            await Context.Interaction.DeferAsync();
+            await Task.FromResult(result);
         }
         catch (Exception ex)
         {
