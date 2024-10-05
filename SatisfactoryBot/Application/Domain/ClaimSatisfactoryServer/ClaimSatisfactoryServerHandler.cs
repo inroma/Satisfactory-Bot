@@ -51,7 +51,7 @@ public class ClaimSatisfactoryServerHandler : IRequestHandler<ClaimSatisfactoryS
                 await TokenAuthToSatisfactoryServer(request.Url, request.Token);
                 // if adding server with token, we retrieve the server name via Udp
                 var ip = GetRemoteAddressFromUrl(request.Url);
-                request.ServerName = client.GetServerNameWithUdp(ip);
+                request.ServerName = await client.GetServerNameWithUdp(ip);
             }
             if (request.Token != null)
             {

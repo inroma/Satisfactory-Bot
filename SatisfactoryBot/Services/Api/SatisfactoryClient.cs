@@ -158,7 +158,7 @@ public class SatisfactoryClient : ISatisfactoryClient
         return true;
     }
 
-    public string GetServerNameWithUdp(IPEndPoint remoteAddress)
+    public async Task<string> GetServerNameWithUdp(IPEndPoint remoteAddress)
     {
         var client = new UdpClient();
         client.Connect(remoteAddress);
@@ -169,10 +169,10 @@ public class SatisfactoryClient : ISatisfactoryClient
         var cookie = BitConverter.GetBytes(DateTime.Now.Ticks);
 
         byte[] data = [.. protocolMagic, messageType, protocol, .. cookie, 0x1];
-        client.Send(data, data.Length);
+        await client.SendAsync(data, data.Length);
 
-        var receivedData = client.Receive(ref remoteAddress);
-        var name = System.Text.Encoding.Default.GetString(receivedData).Split("\0").Last().Split("\u0001").First();
+        var receivedData = await client.ReceiveAsync();
+        var name = System.Text.Encoding.Default.GetString(receivedData.Buffer).Split("\0").Last().Split("\u0001").First();
 
         return name;
     }
