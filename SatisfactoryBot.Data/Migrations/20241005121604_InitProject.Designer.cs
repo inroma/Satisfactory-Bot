@@ -12,8 +12,8 @@ using SatisfactoryBot.Data;
 namespace SatisfactoryBot.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240928124610_satisfactoryURl")]
-    partial class satisfactoryURl
+    [Migration("20241005121604_InitProject")]
+    partial class InitProject
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -57,24 +57,12 @@ namespace SatisfactoryBot.Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<decimal>("GuildId")
+                        .HasColumnType("numeric(20,0)");
+
                     b.HasKey("Id");
 
                     b.ToTable("DiscordServer");
-                });
-
-            modelBuilder.Entity("SatisfactoryBot.Data.Models.Relations.SatisfactoryToDiscord", b =>
-                {
-                    b.Property<int>("DiscordServerId")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("SatisfactoryServerId")
-                        .HasColumnType("integer");
-
-                    b.HasKey("DiscordServerId", "SatisfactoryServerId");
-
-                    b.HasIndex("SatisfactoryServerId");
-
-                    b.ToTable("SatisfactoryToDiscord");
                 });
 
             modelBuilder.Entity("SatisfactoryBot.Data.Models.SatisfactoryServer", b =>
@@ -88,6 +76,12 @@ namespace SatisfactoryBot.Data.Migrations
                     b.Property<DateTime>("CreationTime")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("DiscordServerId")
+                        .HasColumnType("integer");
+
+                    b.Property<bool>("IsDefaultServer")
+                        .HasColumnType("boolean");
 
                     b.Property<string>("Name")
                         .HasColumnType("text");
@@ -104,6 +98,8 @@ namespace SatisfactoryBot.Data.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("DiscordServerId");
+
                     b.ToTable("SatisfactoryServer");
                 });
 
@@ -118,24 +114,22 @@ namespace SatisfactoryBot.Data.Migrations
                     b.Navigation("DiscordServer");
                 });
 
-            modelBuilder.Entity("SatisfactoryBot.Data.Models.Relations.SatisfactoryToDiscord", b =>
+            modelBuilder.Entity("SatisfactoryBot.Data.Models.SatisfactoryServer", b =>
                 {
-                    b.HasOne("SatisfactoryBot.Data.Models.DiscordServer", null)
-                        .WithMany()
+                    b.HasOne("SatisfactoryBot.Data.Models.DiscordServer", "DiscordServer")
+                        .WithMany("SatisfactoryServers")
                         .HasForeignKey("DiscordServerId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("SatisfactoryBot.Data.Models.SatisfactoryServer", null)
-                        .WithMany()
-                        .HasForeignKey("SatisfactoryServerId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                    b.Navigation("DiscordServer");
                 });
 
             modelBuilder.Entity("SatisfactoryBot.Data.Models.DiscordServer", b =>
                 {
                     b.Navigation("DiscordRoles");
+
+                    b.Navigation("SatisfactoryServers");
                 });
 #pragma warning restore 612, 618
         }
