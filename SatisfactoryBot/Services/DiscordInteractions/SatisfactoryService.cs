@@ -24,16 +24,12 @@ using SatisfactoryBot.Application.Domain.UploadSaveGame;
 using SatisfactoryBot.Helpers;
 using SatisfactoryBot.Models.Settings;
 using SatisfactoryBot.Services.DiscordInteractions.Attributes;
-using SatisfactoryBot.Application.Domain.ListServers;
-using SatisfactoryBot.Application.Domain.RenameServer;
 using SatisfactoryBot.Application.Domain.SetAutoLoadSessionName;
-using SatisfactoryBot.Data.Models;
 using SatisfactoryBot.Services.Api.Models.Responses;
 using System.Text.Json;
 using System.Threading.Tasks;
 using System.Linq;
 using SatisfactoryBot.Services.Api.Models;
-using SatisfactoryBot.Application.Domain.UpdateActiveServer;
 
 public class SatisfactoryService : InteractionModuleBase<SocketInteractionContext>
 {

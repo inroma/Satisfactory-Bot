@@ -7,7 +7,6 @@ using Microsoft.Extensions.Logging;
 using SatisfactoryBot.Application.Domain.ListServers;
 using SatisfactoryBot.Application.Domain.UpdateActiveServer;
 using SatisfactoryBot.Data.Models;
-using System.Text.Json;
 using System.Threading.Tasks;
 
 public class DiscordManagementService : InteractionModuleBase<SocketInteractionContext>
