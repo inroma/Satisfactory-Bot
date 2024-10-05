@@ -121,6 +121,7 @@ public class SatisfactoryService : InteractionModuleBase<SocketInteractionContex
     }
 
     [SlashCommand("rename", "Rename the Satisfactory Server")]
+    [DefaultMemberPermissions(GuildPermission.Administrator)]
     public async Task RenameServer([Summary(description: "New server name to define")] string name)
     {
         logger.LogInformation("RenameServer command started");
@@ -138,6 +139,7 @@ public class SatisfactoryService : InteractionModuleBase<SocketInteractionContex
     }
 
     [SlashCommand("event", "Enable/Disable in game FICSmas event")]
+    [DefaultMemberPermissions(GuildPermission.Administrator)]
     public async Task DisableInGameEvent([Choice("Enabled", 1), Choice("Disabled", 0)] int status)
     {
         try
@@ -160,6 +162,7 @@ public class SatisfactoryService : InteractionModuleBase<SocketInteractionContex
     }
 
     [SlashCommand("network", "Changes the Network Quality Setting")]
+    [DefaultMemberPermissions(GuildPermission.Administrator)]
     public async Task UpdateNetworkQualityCommand(
         [Choice("Low", 0), Choice("Medium", 1), Choice("High", 2), Choice("Ultra", 3)] int networkQuality)
     {
@@ -185,6 +188,7 @@ public class SatisfactoryService : InteractionModuleBase<SocketInteractionContex
     #region Shutdown
 
     [SlashCommand("shutdown", "Shutdown the Satisfactory server, use with caution")]
+    [DefaultMemberPermissions(GuildPermission.Administrator)]
     public async Task ShutdownServer()
     {
         try
@@ -198,8 +202,8 @@ public class SatisfactoryService : InteractionModuleBase<SocketInteractionContex
         }
     }
 
-    [DoUserCheck]
     [ComponentInteraction("shutdown-confirm:*")]
+    [DoUserCheck]
     public async Task ConfirmShutdownServer()
     {
         try
@@ -222,6 +226,7 @@ public class SatisfactoryService : InteractionModuleBase<SocketInteractionContex
     #endregion Shutdown
 
     [SlashCommand("new-game", "Creates a new game")]
+    [DefaultMemberPermissions(GuildPermission.Administrator)]
     public async Task CreateNewGame(
         [Summary("Session-Name"), MinLength(3), MaxLength(80)] string sessionName,
         [Summary("Start-Location"), Choice("⛺ Grass Fields", "Grass Fields"),
@@ -252,6 +257,7 @@ public class SatisfactoryService : InteractionModuleBase<SocketInteractionContex
     #region Save
 
     [SlashCommand("save", "Saves the current game")]
+    [DefaultMemberPermissions(GuildPermission.Administrator)]
     public async Task RunCommandSave(string saveName)
     {
         try
@@ -274,6 +280,7 @@ public class SatisfactoryService : InteractionModuleBase<SocketInteractionContex
     }
 
     [SlashCommand("delete-save-file", "Deletes the specified save file")]
+    [DefaultMemberPermissions(GuildPermission.Administrator)]
     public async Task DeleteSaveFile([Summary(description: "save filename to delete")] string fileName)
     {
         try
@@ -295,6 +302,7 @@ public class SatisfactoryService : InteractionModuleBase<SocketInteractionContex
     }
 
     [SlashCommand("delete-save-session", "Deletes all save files belonging to the specific session name")]
+    [DefaultMemberPermissions(GuildPermission.Administrator)]
     public async Task DeleteSaveSession([Summary(description: "session name to delete")] string session)
     {
         try
@@ -316,6 +324,7 @@ public class SatisfactoryService : InteractionModuleBase<SocketInteractionContex
     }
 
     [SlashCommand("new-save", "Creates a new save file of the current game")]
+    [DefaultMemberPermissions(GuildPermission.Administrator)]
     public async Task SaveGame(string saveName)
     {
         try
@@ -337,6 +346,7 @@ public class SatisfactoryService : InteractionModuleBase<SocketInteractionContex
     }
 
     [SlashCommand("auto-save", "Defines the Auto-save interval in seconds (default: 300)")]
+    [DefaultMemberPermissions(GuildPermission.Administrator)]
     public async Task AutoSaveIntervalCommand([MinValue(0), MaxValue(7200)] int interval)
     {
         try
@@ -361,6 +371,7 @@ public class SatisfactoryService : InteractionModuleBase<SocketInteractionContex
     #endregion Save
 
     [SlashCommand("load", "Loads the save game file by name")]
+    [DefaultMemberPermissions(GuildPermission.Administrator)]
     public async Task LoadGame(
         [Summary(description: "Name of the save game file to load"), MinLength(3)] string saveName,
         [Summary(description: "True if save game file should be loaded with Advanced Game Settings enabled")] bool advancedSettings = false)
@@ -410,6 +421,7 @@ public class SatisfactoryService : InteractionModuleBase<SocketInteractionContex
     }
 
     [SlashCommand("upload", "Uploads save game file to the Dedicated Server with the given name.")]
+    [DefaultMemberPermissions(GuildPermission.Administrator)]
     public async Task UploadSaveFile(
         IAttachment file,
         [Summary(description: "Name of the save game file to create on the Dedicated Server")] string saveName,
@@ -444,6 +456,7 @@ public class SatisfactoryService : InteractionModuleBase<SocketInteractionContex
     }
 
     [SlashCommand("autoload", "Updates the name of the session that the Dedicated Server will automatically load on startup")]
+    [DefaultMemberPermissions(GuildPermission.Administrator)]
     public async Task SetAutoLoadSessionName()
     {
         logger.LogInformation("SetAutoLoadSessionName command started");
@@ -478,6 +491,7 @@ public class SatisfactoryService : InteractionModuleBase<SocketInteractionContex
     }
 
     [ComponentInteraction("autoload-session")]
+    [DefaultMemberPermissions(GuildPermission.Administrator)]
     public async Task UpdateActiveServer(string[] selectedValues)
     {
         try

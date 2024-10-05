@@ -48,6 +48,7 @@ public class DiscordManagementService : InteractionModuleBase<SocketInteractionC
     }
 
     [ComponentInteraction("active-server")]
+    [DefaultMemberPermissions(GuildPermission.Administrator)]
     public async Task UpdateActiveServer(string[] selectedValues)
     {
         try

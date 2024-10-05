@@ -3,6 +3,7 @@
 using Discord.Interactions;
 using Discord.WebSocket;
 using Microsoft.Extensions.Logging;
+using SatisfactoryBot.Services.DiscordInteractions.Attributes;
 
 public class BaseModule : InteractionModuleBase<SocketInteractionContext>
 {
@@ -24,6 +25,7 @@ public class BaseModule : InteractionModuleBase<SocketInteractionContext>
     #region Public Methods
 
     [ComponentInteraction("delete-interaction")]
+    [DoUserCheck]
     public async Task DeleteInteraction()
     {
         try

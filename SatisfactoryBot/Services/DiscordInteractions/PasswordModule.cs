@@ -1,5 +1,6 @@
 ﻿namespace SatisfactoryBot.Services.DiscordInteractions;
 
+using Discord;
 using Discord.Interactions;
 using MediatR;
 using Microsoft.Extensions.Logging;
@@ -27,6 +28,7 @@ public partial class PasswordModule : InteractionModuleBase<SocketInteractionCon
     #endregion Public Constructor
 
     [SlashCommand("user-password", "Update client password to access server")]
+    [DefaultMemberPermissions(GuildPermission.Administrator)]
     public async Task ShowModalUpdateClientPassword()
     {
         try
@@ -41,6 +43,7 @@ public partial class PasswordModule : InteractionModuleBase<SocketInteractionCon
     }
 
     [SlashCommand("admin-password", "Update the Admin server password")]
+    [DefaultMemberPermissions(GuildPermission.Administrator)]
     public async Task ShowModalUpdateAdminPassword()
     {
         try
