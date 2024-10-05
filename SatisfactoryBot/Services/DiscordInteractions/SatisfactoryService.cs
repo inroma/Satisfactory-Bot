@@ -5,6 +5,7 @@ using Discord.Interactions;
 using Discord.WebSocket;
 using MediatR;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using SatisfactoryBot.Application.Domain.DeleteSave;
 using SatisfactoryBot.Application.Domain.DeleteSaveSession;
 using SatisfactoryBot.Application.Domain.DownloadSaveGame;
@@ -20,6 +21,7 @@ using SatisfactoryBot.Application.Domain.SaveGame;
 using SatisfactoryBot.Application.Domain.Shutdown;
 using SatisfactoryBot.Application.Domain.UploadSaveGame;
 using SatisfactoryBot.Helpers;
+using SatisfactoryBot.Models.Settings;
 using SatisfactoryBot.Services.DiscordInteractions.Attributes;
 using System.Text.Json;
 using System.Threading.Tasks;
@@ -30,15 +32,17 @@ public class SatisfactoryService : InteractionModuleBase<SocketInteractionContex
 
     private readonly ILogger<SatisfactoryService> logger;
     private readonly ISender mediatr;
+    private readonly GlobalSettings globalSettings;
 
     #endregion Private Properties
 
     #region Public Constructor
 
-    public SatisfactoryService(ILogger<SatisfactoryService> logger, ISender sender)
+    public SatisfactoryService(ILogger<SatisfactoryService> logger, ISender sender, IOptions<GlobalSettings> options)
     {
         this.logger = logger;
         mediatr = sender;
+        globalSettings = options.Value;
     }
 
     #endregion Public Constructor
@@ -411,6 +415,11 @@ public class SatisfactoryService : InteractionModuleBase<SocketInteractionContex
         {
             logger.LogInformation("Uploading save from User: {User}", Context.User.Id);
             await DeferAsync();
+            if (file.Size > globalSettings.DiscordSettings.MaxFileSize)
+            {
+                await FollowupAsync($"Process canceled, max file size is {globalSettings.DiscordSettings.MaxFileSize/1000000} Mo.");
+                return;
+            }
             var result = await mediatr.Send(new UploadSaveGameCommand()
             {
                 GuildId = Context.Guild.Id,
