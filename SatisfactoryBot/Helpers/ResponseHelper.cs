@@ -4,6 +4,7 @@ using Discord;
 using SatisfactoryBot.Models;
 using SatisfactoryBot.Models.Dtos;
 using SatisfactoryBot.Services.Api.Models.Responses;
+using System;
 
 internal class ResponseHelper
 {
@@ -69,9 +70,9 @@ internal class ResponseHelper
 
                 new EmbedFieldBuilder() { IsInline = true, Name = "Players", Value = $"{gameState.NumConnectedPlayers} / {gameState.PlayerLimit}" },
                 new EmbedFieldBuilder() { IsInline = true, Name = "Average Tick Rate", Value = Math.Round(gameState.AverageTickRate, 2) },
-                new EmbedFieldBuilder() { IsInline = true, Name = "\u2800", Value = "\u2800" },
+                GetEmbedBlankField(true),
 
-                new EmbedFieldBuilder() { IsInline = true, Name = "Game Duration", Value = $"{(time.Days > 0 ? (time.Days + " days ") : "")}{time:hh\\:mm\\:ss}" },
+                new EmbedFieldBuilder() { IsInline = true, Name = "Game Duration", Value = GetPlaytimeLabel(time) },
                 new EmbedFieldBuilder() { IsInline = true, Name = "Game Running", Value = gameState.IsGameRunning },
                 new EmbedFieldBuilder() { IsInline = true, Name = "Game Paused", Value = gameState.IsGamePaused },
 
@@ -129,6 +130,79 @@ internal class ResponseHelper
     public static string GetCommandResponse(CommandResponse response)
     {
         return (response.ReturnValue ? $"Command executed successfully: " : $"Failed to execute Command: ") + response.CommandResult;
+    }
+
+    public static ComponentBuilder GetSessionsListSelectMenu(EnumerateSessionsResponse enumerateSessionsResponse, int? index = null)
+    {
+        var componentBuilder = new ComponentBuilder();
+        var menuBuilder = new SelectMenuBuilder()
+        {
+            Placeholder = "Sessions",
+            CustomId = $"sessions-list",
+            IsDisabled = false,
+            MinValues = 1,
+            MaxValues = 1
+        };
+        foreach (var (session, i) in enumerateSessionsResponse.Sessions.Select((item, index) => (item, index)))
+        {
+            var isCurrentSession = i == (index ?? enumerateSessionsResponse.CurrentSessionIndex);
+            var description = session.SaveHeaders.OrderByDescending(h => h.SaveDateTime).First().SaveName;
+            menuBuilder.Options.Add(new(session.SessionName, i.ToString(), description, isDefault: isCurrentSession));
+        }
+
+        return componentBuilder.WithSelectMenu(menuBuilder);
+    }
+
+    public static Embed CreateSessionsSaveDetailsEmbed(IEnumerable<SaveHeader> saveHeaders, int index = 0)
+    {
+        try
+        {
+            var save = saveHeaders.ElementAt(index);
+            var time = TimeSpan.FromSeconds(save.PlayDurationSeconds);
+            var embed = new EmbedBuilder()
+            {
+                Title = $"Session Save \"{save.SaveName}\"",
+                Fields = [
+                    new() { IsInline = true, Name = "Save Date", Value = save.SaveDateTime },
+                    new() { IsInline = true, Name = "Playtime", Value = GetPlaytimeLabel(time) },
+                    new() { IsInline = true, Name = "Map name", Value = save.MapName },
+
+                    new() { IsInline = true, Name = "Save Version", Value = save.SaveVersion },
+                    new() { IsInline = true, Name = "Build Version", Value = save.BuildVersion },
+                    GetEmbedBlankField(true),
+
+                    new() { IsInline = true, Name = "Creative Mode", Value = save.IsCreativeModeEnabled },
+                    new() { IsInline = true, Name = "Modded Save", Value = save.IsModdedSave }
+                ]
+            };
+            if (!string.IsNullOrEmpty(save.MapOptions))
+            {
+                embed.AddField("Map options", save.MapOptions, true);
+            }
+            return embed.Build();
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            return null;
+        }
+    }
+
+    public static ComponentBuilder CreateSessionsPagingButtons(ComponentBuilder component, int buttonCount, int menuIndex = 0, int pageIndex = 0)
+    {
+        try
+        {
+            for (int i = 0; i < buttonCount; i++)
+            {
+                component.WithButton((i + 1).ToString(), $"sessions-list-page-{menuIndex}-{i}", disabled: i == pageIndex);
+            }
+            return component;
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            return null;
+        }
     }
 
     #region Private Methods
@@ -192,6 +266,10 @@ internal class ResponseHelper
         }
         return schematic;
     }
+
+    private static EmbedFieldBuilder GetEmbedBlankField(bool inline = false) => new() { IsInline = inline, Name = "\u2800", Value = "\u2800" };
+
+    private static string GetPlaytimeLabel(TimeSpan time) => $"{(time.Days > 0 ? (time.Days + " days ") : "")}{time:hh\\:mm\\:ss}";
 
     #endregion Private Methods
 }

@@ -5,7 +5,7 @@ using System.Text.Json.Serialization;
 public class EnumerateSessionsResponse
 {
     [JsonPropertyName("Sessions")]
-    public SessionSaveStruct[] Sessions { get; set; }
+    public List<SessionSaveStruct> Sessions { get; set; }
 
     [JsonPropertyName("CurrentSessionIndex")]
     public int CurrentSessionIndex { get; set; }
@@ -17,7 +17,7 @@ public class SessionSaveStruct
     public string SessionName { get; set; }
 
     [JsonPropertyName("SaveHeaders")]
-    public SaveHeader[] SaveHeaders { get; set; }
+    public List<SaveHeader> SaveHeaders { get; set; }
 }
 
 public class SaveHeader

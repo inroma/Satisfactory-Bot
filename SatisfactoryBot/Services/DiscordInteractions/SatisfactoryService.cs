@@ -463,7 +463,7 @@ public class SatisfactoryService : InteractionModuleBase<SocketInteractionContex
         try
         {
             var result = await mediatr.Send(new EnumerateSessionsQuery(Context.Guild.Id));
-            var menu = CreateSelectMenu(result);
+            var menu = CreateSelectMenu(result.Data);
             var builder = new ComponentBuilder().WithSelectMenu(menu);
             await RespondAsync("Satisfactory auto-load session", components: builder.Build());
         }
@@ -471,22 +471,6 @@ public class SatisfactoryService : InteractionModuleBase<SocketInteractionContex
         {
             logger.LogError(ex, "Error setting autoload session: {Ex}", ex.Message);
             await RespondAsync("Error setting autoload session", ephemeral: true);
-        }
-    }
-
-    [SlashCommand("sessions", "Enumerates all save game files available on the Dedicated Server")]
-    public async Task EnumerateSessions()
-    {
-        logger.LogInformation("EnumerateSessions command started");
-        try
-        {
-            var result = await mediatr.Send(new EnumerateSessionsQuery(Context.Guild.Id));
-            await RespondAsync(JsonSerializer.Serialize(result));
-        }
-        catch (Exception ex)
-        {
-            logger.LogError(ex, "Error getting available save game files: {Ex}", ex.Message);
-            await RespondAsync("Error getting available save game files", ephemeral: true);
         }
     }
 
@@ -507,9 +491,61 @@ public class SatisfactoryService : InteractionModuleBase<SocketInteractionContex
         }
     }
 
+    [SlashCommand("sessions", "Enumerates all save game files available on the Dedicated Server")]
+    public async Task EnumerateSessions()
+    {
+        logger.LogInformation("EnumerateSessions command started");
+        try
+        {
+            await DeferAsync();
+            var result = await mediatr.Send(new EnumerateSessionsQuery(Context.Guild.Id));
+            var currentSession = result.Data.Sessions.Where((_, i) => i == result.Data.CurrentSessionIndex).First();
+            var menu = ResponseHelper.GetSessionsListSelectMenu(result.Data);
+            var embed = ResponseHelper.CreateSessionsSaveDetailsEmbed(currentSession.SaveHeaders);
+            var buttons = ResponseHelper.CreateSessionsPagingButtons(menu, currentSession.SaveHeaders.Count);
+            await FollowupAsync(components: menu.Build(), embed: embed);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error getting available save game files: {Ex}", ex.Message);
+            await RespondAsync("Error getting available save game files", ephemeral: true);
+        }
+    }
+
+    [ComponentInteraction("sessions-list")]
+    public async Task SessionsUpdateSession(string[] selectedValues)
+    {
+        try
+        {
+            await DeferAsync();
+            var index = int.Parse(selectedValues[0]);
+            var result = await mediatr.Send(new EnumerateSessionsQuery(Context.Guild.Id));
+            await UpdateSessionListResponse(result.Data, index);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error changing session list: {Ex}", ex.Message);
+        }
+    }
+
+    [ComponentInteraction("sessions-list-page-*-*")]
+    public async Task SessionsUpdateSessionPage(int menuIndex, int pageIndex)
+    {
+        try
+        {
+            await DeferAsync();
+            var result = await mediatr.Send(new EnumerateSessionsQuery(Context.Guild.Id));
+            await UpdateSessionListResponse(result.Data, menuIndex, pageIndex);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error changing save page: {Ex}", ex.Message);
+        }
+    }
+
     #region Private Methods
 
-    private static SelectMenuBuilder CreateSelectMenu(BaseResponse<EnumerateSessionsResponse> response)
+    private static SelectMenuBuilder CreateSelectMenu(EnumerateSessionsResponse response)
     {
         var menuBuilder = new SelectMenuBuilder()
         {
@@ -517,17 +553,30 @@ public class SatisfactoryService : InteractionModuleBase<SocketInteractionContex
             MaxValues = 1,
             MinValues = 1
         };
-        foreach (var (value, i) in response.Data.Sessions.Select((Value, i) => (Value, i)))
+        foreach (var (value, i) in response.Sessions.Select((Value, i) => (Value, i)))
         {
             menuBuilder.AddOption(new()
             {
                 Label = value.SessionName,
                 Description = value.SaveHeaders.LastOrDefault().SaveName,
                 Value = value.SessionName,
-                IsDefault = (i == response.Data.CurrentSessionIndex)
+                IsDefault = (i == response.CurrentSessionIndex)
             });
         };
         return menuBuilder;
+    }
+
+    private async Task UpdateSessionListResponse(EnumerateSessionsResponse response, int menuIndex = 0, int pageIndex = 0)
+    {
+        var currentSession = response.Sessions.Where((_, i) => i == menuIndex).First();
+        var menu = ResponseHelper.GetSessionsListSelectMenu(response, menuIndex);
+        var embed = ResponseHelper.CreateSessionsSaveDetailsEmbed(currentSession.SaveHeaders, pageIndex);
+        var buttons = ResponseHelper.CreateSessionsPagingButtons(menu, currentSession.SaveHeaders.Count, menuIndex, pageIndex);
+        await ModifyOriginalResponseAsync((m) =>
+        {
+            m.Embeds = new([embed]);
+            m.Components = menu.Build();
+        });
     }
 
     #endregion Private Methods
