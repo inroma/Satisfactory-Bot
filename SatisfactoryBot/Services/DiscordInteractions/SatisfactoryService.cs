@@ -402,6 +402,11 @@ public class SatisfactoryService : InteractionModuleBase<SocketInteractionContex
         try
         {
             logger.LogInformation("Downloading save from User: {User}", Context.User.Id);
+            if (globalSettings.DiscordSettings.DisableDownload)
+            {
+                await FollowupAsync($"Process canceled, File download is currently disabled by the bot.");
+                return;
+            }
             await DeferAsync();
             var result = await mediatr.Send(new DownloadSaveGameCommand()
             {
@@ -432,6 +437,11 @@ public class SatisfactoryService : InteractionModuleBase<SocketInteractionContex
         {
             logger.LogInformation("Uploading save from User: {User}", Context.User.Id);
             await DeferAsync();
+            if (globalSettings.DiscordSettings.DisableUpload)
+            {
+                await FollowupAsync($"Process canceled, File upload is currently disabled by the bot.");
+                return;
+            }
             if (file.Size > globalSettings.DiscordSettings.MaxFileSize)
             {
                 await FollowupAsync($"Process canceled, max file size is {globalSettings.DiscordSettings.MaxFileSize/1000000} Mo.");

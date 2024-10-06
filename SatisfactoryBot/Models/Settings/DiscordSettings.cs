@@ -8,6 +8,10 @@ public class DiscordSettings
 
     public ulong? DevServerId { get; set; }
 
+    public bool DisableDownload { get; set; }
+
+    public bool DisableUpload { get; set; }
+
     /// <summary>
     /// Max file size in bytes
     /// </summary>
