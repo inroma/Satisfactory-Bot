@@ -63,7 +63,7 @@ public class ClaimSatisfactoryServerHandler : IRequestHandler<ClaimSatisfactoryS
                     throw new Exception("Satisfactory server already registered on this Discord. Operation canceled.");
                 }
 
-                var isDefault = discordServer.SatisfactoryServers?.Count(s => s.IsDefaultServer) == 0;
+                var isDefault = discordServer.SatisfactoryServers == null || discordServer.SatisfactoryServers?.Count(s => s.IsDefaultServer) == 0;
                 var satServer = new SatisfactoryServer()
                 {
                     Owner = request.UserId,
