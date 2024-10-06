@@ -59,7 +59,7 @@ public class UnitOfWork<TContext> : IUnitOfWork<TContext> where TContext : DbCon
         {
             if (disposing)
             {
-                _repositories.Clear();
+                _repositories?.Clear();
                 _context.Dispose();
             }
         }
