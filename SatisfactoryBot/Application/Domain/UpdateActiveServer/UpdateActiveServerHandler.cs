@@ -4,13 +4,10 @@ using MediatR;
 using Microsoft.Extensions.Logging;
 using SatisfactoryBot.Data.UnitOfWork;
 using SatisfactoryBot.Data;
-using SatisfactoryBot.Services.Api.Interfaces;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
 using SatisfactoryBot.Data.Repositories.Interfaces;
-using SatisfactoryBot.Data.Models;
-using Microsoft.EntityFrameworkCore;
 
 internal class UpdateActiveServerHandler : IRequestHandler<UpdateActiveServerCommand, bool>
 {
