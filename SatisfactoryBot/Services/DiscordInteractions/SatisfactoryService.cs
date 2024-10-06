@@ -60,7 +60,7 @@ public class SatisfactoryService : InteractionModuleBase<SocketInteractionContex
         {
             var result = await mediatr.Send(new GetHealthQuery(Context.Guild.Id));
 
-            await RespondAsync(JsonSerializer.Serialize(result), ephemeral: true);
+            await RespondAsync(embed: ResponseHelper.CreateEmbedHealthCheck(result.HealthResponse, result.ServerName));
         }
         catch (Exception ex)
         {
@@ -77,7 +77,7 @@ public class SatisfactoryService : InteractionModuleBase<SocketInteractionContex
         {
             var result = await mediatr.Send(new GetStateQuery(Context.Guild.Id));
 
-            await RespondAsync(JsonSerializer.Serialize(result), ephemeral: true);
+            await RespondAsync(embed: ResponseHelper.CreateEmbedServerState(result));
         }
         catch (Exception ex)
         {
@@ -94,7 +94,7 @@ public class SatisfactoryService : InteractionModuleBase<SocketInteractionContex
         {
             var result = await mediatr.Send(new GetOptionsQuery(Context.Guild.Id));
 
-            await RespondAsync(JsonSerializer.Serialize(result));
+            await RespondAsync(embed: ResponseHelper.CreateEmbedServerOptions(result));
         }
         catch (Exception ex)
         {
@@ -111,7 +111,7 @@ public class SatisfactoryService : InteractionModuleBase<SocketInteractionContex
         {
             var result = await mediatr.Send(new GetAdvancedGameSettingsQuery(Context.Guild.Id));
 
-            await RespondAsync(JsonSerializer.Serialize(result));
+            await RespondAsync(embed: ResponseHelper.CreateEmbedAdvancedSettings(result));
         }
         catch (Exception ex)
         {
@@ -129,7 +129,7 @@ public class SatisfactoryService : InteractionModuleBase<SocketInteractionContex
         {
             var result = await mediatr.Send(new RenameServerCommand(Context.Guild.Id, name));
 
-            await RespondAsync(JsonSerializer.Serialize(result));
+            await RespondAsync(result ? "Server renamed successfully !" : "Failed to rename Server");
         }
         catch (Exception ex)
         {
@@ -152,7 +152,7 @@ public class SatisfactoryService : InteractionModuleBase<SocketInteractionContex
                 Value = status,
                 GuildId = Context.Guild.Id
             });
-            await FollowupAsync(JsonSerializer.Serialize(result));
+            await FollowupAsync(ResponseHelper.GetCommandResponse(result.Data));
         }
         catch (Exception ex)
         {
@@ -176,7 +176,7 @@ public class SatisfactoryService : InteractionModuleBase<SocketInteractionContex
                 Value = networkQuality,
                 GuildId = Context.Guild.Id
             });
-            await FollowupAsync(JsonSerializer.Serialize(result));
+            await FollowupAsync(ResponseHelper.GetCommandResponse(result.Data));
         }
         catch (Exception ex)
         {
@@ -270,7 +270,7 @@ public class SatisfactoryService : InteractionModuleBase<SocketInteractionContex
                 Value = saveName,
                 GuildId = Context.Guild.Id
             });
-            await FollowupAsync(JsonSerializer.Serialize(result));
+            await FollowupAsync(ResponseHelper.GetCommandResponse(result.Data));
         }
         catch (Exception ex)
         {
@@ -359,7 +359,7 @@ public class SatisfactoryService : InteractionModuleBase<SocketInteractionContex
                 Value = interval,
                 GuildId = Context.Guild.Id
             });
-            await FollowupAsync(JsonSerializer.Serialize(result));
+            await FollowupAsync(ResponseHelper.GetCommandResponse(result.Data));
         }
         catch (Exception ex)
         {
@@ -386,7 +386,7 @@ public class SatisfactoryService : InteractionModuleBase<SocketInteractionContex
                 EnableAdvancedGameSettings = advancedSettings
             });
 
-            await RespondAsync(JsonSerializer.Serialize(result));
+            await RespondAsync(result ? "Game loaded successfully !" : "Failed to load specified Game");
         }
         catch (Exception ex)
         {
@@ -465,7 +465,7 @@ public class SatisfactoryService : InteractionModuleBase<SocketInteractionContex
             var result = await mediatr.Send(new EnumerateSessionsQuery(Context.Guild.Id));
             var menu = CreateSelectMenu(result);
             var builder = new ComponentBuilder().WithSelectMenu(menu);
-            await RespondAsync("Satisfactory auto-load session", components: builder.Build(), ephemeral: true);
+            await RespondAsync("Satisfactory auto-load session", components: builder.Build());
         }
         catch (Exception ex)
         {

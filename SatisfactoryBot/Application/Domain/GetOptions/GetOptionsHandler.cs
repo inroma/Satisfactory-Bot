@@ -3,14 +3,13 @@
 using MediatR;
 using Microsoft.Extensions.Logging;
 using SatisfactoryBot.Data.Repositories.Interfaces;
+using SatisfactoryBot.Models.Dtos;
 using SatisfactoryBot.Services.Api;
 using SatisfactoryBot.Services.Api.Interfaces;
-using SatisfactoryBot.Services.Api.Models;
-using SatisfactoryBot.Services.Api.Models.Responses;
 using System.Threading;
 using System.Threading.Tasks;
 
-internal class GetOptionsHandler : IRequestHandler<GetOptionsQuery, BaseResponse<OptionsResponse>>
+internal class GetOptionsHandler : IRequestHandler<GetOptionsQuery, ServerOptionsDto>
 {
     #region Private Properties
     
@@ -30,7 +29,7 @@ internal class GetOptionsHandler : IRequestHandler<GetOptionsQuery, BaseResponse
 
     #endregion Public Constructor
 
-    public async Task<BaseResponse<OptionsResponse>> Handle(GetOptionsQuery request, CancellationToken cancellationToken)
+    public async Task<ServerOptionsDto> Handle(GetOptionsQuery request, CancellationToken cancellationToken)
     {
         logger.LogInformation("Retrieving server options");
 
@@ -38,6 +37,11 @@ internal class GetOptionsHandler : IRequestHandler<GetOptionsQuery, BaseResponse
 
         client = new SatisfactoryClient(server.Url, server.Token);
 
-        return await client.GetOptions();
+        var result = await client.GetOptions();
+        return new()
+        {
+            ServerName = server.Name,
+            OptionsResponse = result.Data
+        };
     }
 }

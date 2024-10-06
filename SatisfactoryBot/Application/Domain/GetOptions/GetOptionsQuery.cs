@@ -1,10 +1,9 @@
 ﻿namespace SatisfactoryBot.Application.Domain.GetOptions;
 
 using MediatR;
-using SatisfactoryBot.Services.Api.Models.Responses;
-using SatisfactoryBot.Services.Api.Models;
+using SatisfactoryBot.Models.Dtos;
 
-internal record GetOptionsQuery : IRequest<BaseResponse<OptionsResponse>>
+internal record GetOptionsQuery : IRequest<ServerOptionsDto>
 {
     public ulong GuildId { get; set; }
 

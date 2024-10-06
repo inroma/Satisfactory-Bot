@@ -1,10 +1,9 @@
 ﻿namespace SatisfactoryBot.Application.Domain.GetState;
 
 using MediatR;
-using SatisfactoryBot.Services.Api.Models;
-using SatisfactoryBot.Services.Api.Models.Responses;
+using SatisfactoryBot.Models.Dtos;
 
-internal record GetStateQuery : IRequest<BaseResponse<StateResponse>>
+internal record GetStateQuery : IRequest<ServerStateDto>
 {
     public ulong GuildId { get; set; }
 

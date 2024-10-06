@@ -1,10 +1,9 @@
 ﻿namespace SatisfactoryBot.Application.Domain.GetAdvancedGameSettings;
 
 using MediatR;
-using SatisfactoryBot.Services.Api.Models;
-using SatisfactoryBot.Services.Api.Models.Responses;
+using SatisfactoryBot.Models.Dtos;
 
-internal class GetAdvancedGameSettingsQuery : IRequest<BaseResponse<AdvancedGameSettingsResponse>>
+internal class GetAdvancedGameSettingsQuery : IRequest<ServerAdvancedSettingsDto>
 {
     public ulong GuildId { get; set; }
 

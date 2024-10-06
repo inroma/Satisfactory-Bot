@@ -2,16 +2,14 @@
 
 using MediatR;
 using Microsoft.Extensions.Logging;
-using SatisfactoryBot.Application.Domain.GetHealth;
 using SatisfactoryBot.Data.Repositories.Interfaces;
+using SatisfactoryBot.Models.Dtos;
 using SatisfactoryBot.Services.Api;
 using SatisfactoryBot.Services.Api.Interfaces;
-using SatisfactoryBot.Services.Api.Models;
-using SatisfactoryBot.Services.Api.Models.Responses;
 using System.Threading;
 using System.Threading.Tasks;
 
-internal class GetAdvancedGameSettingsHandler : IRequestHandler<GetAdvancedGameSettingsQuery, BaseResponse<AdvancedGameSettingsResponse>>
+internal class GetAdvancedGameSettingsHandler : IRequestHandler<GetAdvancedGameSettingsQuery, ServerAdvancedSettingsDto>
 {
     private ISatisfactoryClient client;
     private readonly ILogger<GetAdvancedGameSettingsHandler> logger;
@@ -24,7 +22,7 @@ internal class GetAdvancedGameSettingsHandler : IRequestHandler<GetAdvancedGameS
     }
 
 
-    public async Task<BaseResponse<AdvancedGameSettingsResponse>> Handle(GetAdvancedGameSettingsQuery request, CancellationToken cancellationToken)
+    public async Task<ServerAdvancedSettingsDto> Handle(GetAdvancedGameSettingsQuery request, CancellationToken cancellationToken)
     {
         logger.LogInformation("Retrieving server health");
 
@@ -32,6 +30,11 @@ internal class GetAdvancedGameSettingsHandler : IRequestHandler<GetAdvancedGameS
 
         client = new SatisfactoryClient(server.Url, server.Token);
 
-        return await client.GetAdvancedGameSettings();
+        var result = await client.GetAdvancedGameSettings();
+        return new()
+        {
+            ServerName = server.Name,
+            AdvancedGameSettings = result.Data
+        };
     }
 }

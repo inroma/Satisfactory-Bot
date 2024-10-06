@@ -1,10 +1,9 @@
 ﻿namespace SatisfactoryBot.Application.Domain.GetHealth;
 
 using MediatR;
-using SatisfactoryBot.Services.Api.Models;
-using SatisfactoryBot.Services.Api.Models.Responses;
+using SatisfactoryBot.Models.Dtos;
 
-internal record GetHealthQuery : IRequest<BaseResponse<HealthResponse>>
+internal record GetHealthQuery : IRequest<ServerHealthDto>
 {
     public ulong GuildId { get; set; }
 

@@ -3,14 +3,13 @@
 using MediatR;
 using Microsoft.Extensions.Logging;
 using SatisfactoryBot.Data.Repositories.Interfaces;
+using SatisfactoryBot.Models.Dtos;
 using SatisfactoryBot.Services.Api;
 using SatisfactoryBot.Services.Api.Interfaces;
-using SatisfactoryBot.Services.Api.Models;
-using SatisfactoryBot.Services.Api.Models.Responses;
 using System.Threading;
 using System.Threading.Tasks;
 
-internal class GetStateHandler : IRequestHandler<GetStateQuery, BaseResponse<StateResponse>>
+internal class GetStateHandler : IRequestHandler<GetStateQuery, ServerStateDto>
 {
     private readonly ILogger<GetStateHandler> logger;
     private ISatisfactoryClient client;
@@ -22,13 +21,18 @@ internal class GetStateHandler : IRequestHandler<GetStateQuery, BaseResponse<Sta
         discordRepository = discordServerRepository;
     }
 
-    public async Task<BaseResponse<StateResponse>> Handle(GetStateQuery request, CancellationToken cancellationToken)
+    public async Task<ServerStateDto> Handle(GetStateQuery request, CancellationToken cancellationToken)
     {
         logger.LogInformation("Retrieving server state");
         var server = discordRepository.GetActiveSatisfactoryFromDiscordGuildId(request.GuildId);
 
         client = new SatisfactoryClient(server.Url, server.Token);
 
-        return await client.GetState();
+        var result = await client.GetState();
+        return new()
+        {
+            ServerName = server.Name,
+            StateResponse = result.Data
+        };
     }
 }
