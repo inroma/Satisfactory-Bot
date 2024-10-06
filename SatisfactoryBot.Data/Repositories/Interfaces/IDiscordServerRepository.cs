@@ -2,11 +2,11 @@
 
 using SatisfactoryBot.Data.Models;
 
-public interface IDiscordServerRepository: IGenericRepository<DiscordServer>
+public interface IDiscordServerRepository: IGenericRepository<DiscordEntity>
 {
-    SatisfactoryServer GetActiveSatisfactoryFromDiscordGuildId(ulong guildId);
+    SatisfactoryServer GetActiveSatisfactoryFromDiscordEntityId(ulong entityId);
 
-    List<SatisfactoryServer> GetSatisfactoryServersListFromDiscordGuildId(ulong guildId);
+    List<SatisfactoryServer> GetSatisfactoryServersListFromDiscordEntityId(ulong entityId);
 
-    DiscordServer GetOrCreateDiscordServer(ulong guildId);
+    DiscordEntity GetOrCreateDiscordEntity(ulong entityId);
 }

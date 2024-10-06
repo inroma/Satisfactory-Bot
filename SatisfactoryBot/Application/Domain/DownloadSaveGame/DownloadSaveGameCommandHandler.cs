@@ -33,7 +33,7 @@ internal class DownloadSaveGameCommandHandler : IRequestHandler<DownloadSaveGame
     {
         try
         {
-            var server = discordServerRepository.GetActiveSatisfactoryFromDiscordGuildId(request.GuildId);
+            var server = discordServerRepository.GetActiveSatisfactoryFromDiscordEntityId(request.EntityId);
             client = new SatisfactoryClient(server.Url, server.Token);
             return await client.DownloadSave(request.SaveName);
         }

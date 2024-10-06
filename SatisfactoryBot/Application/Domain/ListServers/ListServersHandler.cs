@@ -36,7 +36,7 @@ internal class ListServersHandler : IRequestHandler<ListServersQuery, List<Satis
     {
         try
         {
-            var servers = discordRepository.GetSatisfactoryServersListFromDiscordGuildId(request.GuildId);
+            var servers = discordRepository.GetSatisfactoryServersListFromDiscordEntityId(request.EntityId);
             return Task.FromResult(servers);
         }
         catch (Exception ex)

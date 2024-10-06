@@ -6,7 +6,7 @@ using SatisfactoryBot.Services.Api.Models.Responses;
 
 internal class RunCommandCommand : IRequest<BaseResponse<CommandResponse>>
 {
-    public ulong GuildId { get; set; }
+    public ulong EntityId { get; set; }
 
     public string CommandName { get; set; }
 

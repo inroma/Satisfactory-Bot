@@ -6,6 +6,7 @@ using MediatR;
 using Microsoft.Extensions.Logging;
 using SatisfactoryBot.Application.Domain.UpdateAdminPassword;
 using SatisfactoryBot.Application.Domain.UpdateClientPassword;
+using SatisfactoryBot.Helpers;
 using SatisfactoryBot.Models.Modals;
 
 public partial class PasswordModule : InteractionModuleBase<SocketInteractionContext>
@@ -67,7 +68,7 @@ public partial class PasswordModule : InteractionModuleBase<SocketInteractionCon
             result = await mediatr.Send(new UpdateClientPasswordCommand()
             {
                 Password = modal.Password,
-                GuildId = Context.Guild.Id
+                EntityId = Context.GetContextEntityId()
             });
             await RespondAsync(result ? "Client password updated successfully !" : "Error updating client password");
         }
@@ -88,7 +89,7 @@ public partial class PasswordModule : InteractionModuleBase<SocketInteractionCon
             result = await mediatr.Send(new UpdateAdminPasswordCommand()
             {
                 Password = modal.Password,
-                GuildId = Context.Guild.Id
+                EntityId = Context.GetContextEntityId()
             });
             await RespondAsync(result ? "Admin password updated successfully !" : "Error updating Admin password");
         }

@@ -4,13 +4,13 @@ using MediatR;
 
 internal class UpdateActiveServerCommand : IRequest<bool>
 {
-    public ulong GuildId { get; set; }
+    public ulong EntityId { get; set; }
 
     public int NewlyActiveServerId { get; set; }
 
     public UpdateActiveServerCommand(ulong serverId, int newActiveServer)
     {
-        GuildId = serverId;
+        EntityId = serverId;
         NewlyActiveServerId = newActiveServer;
     }
 }

@@ -25,6 +25,26 @@ namespace SatisfactoryBot.Data.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
+            modelBuilder.Entity("SatisfactoryBot.Data.Models.DiscordEntity", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreationTime")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<decimal>("EntityId")
+                        .HasColumnType("numeric(20,0)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("DiscordEntity");
+                });
+
             modelBuilder.Entity("SatisfactoryBot.Data.Models.DiscordRole", b =>
                 {
                     b.Property<int>("Id")
@@ -42,26 +62,6 @@ namespace SatisfactoryBot.Data.Migrations
                     b.ToTable("DiscordRole");
                 });
 
-            modelBuilder.Entity("SatisfactoryBot.Data.Models.DiscordServer", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTime>("CreationTime")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<decimal>("GuildId")
-                        .HasColumnType("numeric(20,0)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("DiscordServer");
-                });
-
             modelBuilder.Entity("SatisfactoryBot.Data.Models.SatisfactoryServer", b =>
                 {
                     b.Property<int>("Id")
@@ -74,7 +74,7 @@ namespace SatisfactoryBot.Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<int>("DiscordServerId")
+                    b.Property<int>("DiscordEntityId")
                         .HasColumnType("integer");
 
                     b.Property<bool>("IsDefaultServer")
@@ -95,34 +95,34 @@ namespace SatisfactoryBot.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("DiscordServerId");
+                    b.HasIndex("DiscordEntityId");
 
                     b.ToTable("SatisfactoryServer");
                 });
 
             modelBuilder.Entity("SatisfactoryBot.Data.Models.DiscordRole", b =>
                 {
-                    b.HasOne("SatisfactoryBot.Data.Models.DiscordServer", "DiscordServer")
+                    b.HasOne("SatisfactoryBot.Data.Models.DiscordEntity", "DiscordEntity")
                         .WithMany("DiscordRoles")
                         .HasForeignKey("Id")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
-                    b.Navigation("DiscordServer");
+                    b.Navigation("DiscordEntity");
                 });
 
             modelBuilder.Entity("SatisfactoryBot.Data.Models.SatisfactoryServer", b =>
                 {
-                    b.HasOne("SatisfactoryBot.Data.Models.DiscordServer", "DiscordServer")
+                    b.HasOne("SatisfactoryBot.Data.Models.DiscordEntity", "DiscordEntity")
                         .WithMany("SatisfactoryServers")
-                        .HasForeignKey("DiscordServerId")
+                        .HasForeignKey("DiscordEntityId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("DiscordServer");
+                    b.Navigation("DiscordEntity");
                 });
 
-            modelBuilder.Entity("SatisfactoryBot.Data.Models.DiscordServer", b =>
+            modelBuilder.Entity("SatisfactoryBot.Data.Models.DiscordEntity", b =>
                 {
                     b.Navigation("DiscordRoles");
 

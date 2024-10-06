@@ -32,7 +32,7 @@ internal class UpdateAdminPasswordHandler : IRequestHandler<UpdateAdminPasswordC
     {
         try
         {
-            var server = discordServerRepository.GetActiveSatisfactoryFromDiscordGuildId(request.GuildId);
+            var server = discordServerRepository.GetActiveSatisfactoryFromDiscordEntityId(request.EntityId);
             if (server != null)
             {
                 satisfactoryClient = new SatisfactoryClient(server.Url, server.Token);

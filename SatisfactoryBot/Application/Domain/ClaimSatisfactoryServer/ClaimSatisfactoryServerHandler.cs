@@ -55,10 +55,10 @@ public class ClaimSatisfactoryServerHandler : IRequestHandler<ClaimSatisfactoryS
             }
             if (request.Token != null)
             {
-                var discordServer = discordRepository.GetOrCreateDiscordServer(request.GuildId);
+                var discordServer = discordRepository.GetOrCreateDiscordEntity(request.EntityId);
 
                 if (discordServer.Id != default && unitOfWork.GetRepository<SatisfactoryServer>().GetFirstOrDefault(s =>
-                    s.DiscordServerId == discordServer.Id && s.Token == request.Token) != null)
+                    s.DiscordEntityId == discordServer.Id && s.Token == request.Token) != null)
                 {
                     throw new Exception("Satisfactory server already registered on this Discord. Operation canceled.");
                 }
@@ -70,7 +70,7 @@ public class ClaimSatisfactoryServerHandler : IRequestHandler<ClaimSatisfactoryS
                     Token = request.Token,
                     Url = request.Url,
                     Name = request.ServerName,
-                    DiscordServer = discordServer,
+                    DiscordEntity = discordServer,
                     IsDefaultServer = isDefault,
                 };
 

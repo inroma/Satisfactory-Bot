@@ -4,5 +4,5 @@ public class DiscordRole : BaseModel
 {
     public bool IsAdmin { get; set; }
     
-    public virtual DiscordServer DiscordServer { get; set; }
+    public virtual DiscordEntity DiscordEntity { get; set; }
 }

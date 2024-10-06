@@ -32,7 +32,7 @@ internal class DeleteSaveFileCommandHandler : IRequestHandler<DeleteSaveFileComm
     {
         try
         {
-            var server = discordServerRepository.GetActiveSatisfactoryFromDiscordGuildId(request.GuildId);
+            var server = discordServerRepository.GetActiveSatisfactoryFromDiscordEntityId(request.EntityId);
             client = new SatisfactoryClient(server.Url, server.Token);
             var result = await client.DeleteSaveFile(request.SaveName);
             return true;

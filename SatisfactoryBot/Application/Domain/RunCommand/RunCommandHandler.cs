@@ -35,7 +35,7 @@ internal class RunCommandHandler : IRequestHandler<RunCommandCommand, BaseRespon
     {
         try
         {
-            var server = discordServerRepository.GetActiveSatisfactoryFromDiscordGuildId(request.GuildId);
+            var server = discordServerRepository.GetActiveSatisfactoryFromDiscordEntityId(request.EntityId);
             if (server != null)
             {
                 client = new SatisfactoryClient(server.Url, server.Token);

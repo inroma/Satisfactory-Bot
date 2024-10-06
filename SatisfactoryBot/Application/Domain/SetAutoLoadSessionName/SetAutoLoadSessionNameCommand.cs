@@ -4,13 +4,13 @@ using MediatR;
 
 internal class SetAutoLoadSessionNameCommand : IRequest<bool>
 {
-    public ulong GuildId { get; set; }
+    public ulong EntityId { get; set; }
     
     public string SessionName { get; set; }
 
-    public SetAutoLoadSessionNameCommand(ulong guildId, string newSessionName)
+    public SetAutoLoadSessionNameCommand(ulong entityId, string newSessionName)
     {
-        GuildId = guildId;
+        EntityId = entityId;
         SessionName = newSessionName;
     }
 }

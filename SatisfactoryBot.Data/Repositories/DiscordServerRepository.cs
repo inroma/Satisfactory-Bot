@@ -5,7 +5,7 @@ using SatisfactoryBot.Data.Repositories.Interfaces;
 using SatisfactoryBot.Data.UnitOfWork;
 using System.Linq;
 
-public class DiscordServerRepository : GenericRepository<DiscordServer>, IDiscordServerRepository
+public class DiscordServerRepository : GenericRepository<DiscordEntity>, IDiscordServerRepository
 {
     private readonly IUnitOfWork<ApplicationDbContext> unitOfWork;
 
@@ -14,26 +14,26 @@ public class DiscordServerRepository : GenericRepository<DiscordServer>, IDiscor
         this.unitOfWork = unitOfWork;
     }
 
-    public SatisfactoryServer GetActiveSatisfactoryFromDiscordGuildId(ulong guildId) =>
-        unitOfWork.GetRepository<DiscordServer>().GetAll()
-            .Where(s => s.GuildId == guildId)
+    public SatisfactoryServer GetActiveSatisfactoryFromDiscordEntityId(ulong entityId) =>
+        unitOfWork.GetRepository<DiscordEntity>().GetAll()
+            .Where(s => s.EntityId == entityId)
             .SelectMany(d => d.SatisfactoryServers)
             .FirstOrDefault(s => s.IsDefaultServer);
 
-    public List<SatisfactoryServer> GetSatisfactoryServersListFromDiscordGuildId(ulong guildId) =>
-        unitOfWork.GetRepository<DiscordServer>().GetAll()
-            .Where(s => s.GuildId == guildId)
+    public List<SatisfactoryServer> GetSatisfactoryServersListFromDiscordEntityId(ulong entityId) =>
+        unitOfWork.GetRepository<DiscordEntity>().GetAll()
+            .Where(s => s.EntityId == entityId)
             .SelectMany(d => d.SatisfactoryServers).ToList();
 
-    public DiscordServer GetOrCreateDiscordServer(ulong guildId)
+    public DiscordEntity GetOrCreateDiscordEntity(ulong entityId)
     {
-        var discordRepository = unitOfWork.GetRepository<DiscordServer>();
-        var discordServer = discordRepository.GetAll().FirstOrDefault(d => d.GuildId == guildId);
+        var discordRepository = unitOfWork.GetRepository<DiscordEntity>();
+        var discordServer = discordRepository.GetAll().FirstOrDefault(d => d.EntityId == entityId);
         if (discordServer == null)
         {
-            discordServer = new DiscordServer()
+            discordServer = new DiscordEntity()
             {
-                GuildId = guildId
+                EntityId = entityId
             };
             discordRepository.Add(discordServer);
         }

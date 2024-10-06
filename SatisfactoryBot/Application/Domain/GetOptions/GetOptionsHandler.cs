@@ -33,7 +33,7 @@ internal class GetOptionsHandler : IRequestHandler<GetOptionsQuery, ServerOption
     {
         logger.LogInformation("Retrieving server options");
 
-        var server = discordRepository.GetActiveSatisfactoryFromDiscordGuildId(request.GuildId);
+        var server = discordRepository.GetActiveSatisfactoryFromDiscordEntityId(request.EntityId);
 
         client = new SatisfactoryClient(server.Url, server.Token);
 

@@ -25,7 +25,7 @@ internal class GetHealthHandler : IRequestHandler<GetHealthQuery, ServerHealthDt
     {
         logger.LogInformation("Retrieving server health");
 
-        var server = repository.GetActiveSatisfactoryFromDiscordGuildId(request.GuildId);
+        var server = repository.GetActiveSatisfactoryFromDiscordEntityId(request.EntityId);
 
         var client = new SatisfactoryClient(server.Url, server.Token);
 

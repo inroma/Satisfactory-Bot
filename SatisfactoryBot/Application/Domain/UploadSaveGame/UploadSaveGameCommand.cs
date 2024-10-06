@@ -5,7 +5,7 @@ using MediatR;
 
 internal class UploadSaveGameCommand : IRequest<bool>
 {
-    public ulong GuildId { get; set; }
+    public ulong EntityId { get; set; }
 
     public string SaveName { get; set; }
 

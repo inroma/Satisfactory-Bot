@@ -7,6 +7,7 @@ using Microsoft.Extensions.Logging;
 using SatisfactoryBot.Application.Domain.ListServers;
 using SatisfactoryBot.Application.Domain.UpdateActiveServer;
 using SatisfactoryBot.Data.Models;
+using SatisfactoryBot.Helpers;
 using System.Threading.Tasks;
 
 public class DiscordManagementService : InteractionModuleBase<SocketInteractionContext>
@@ -34,7 +35,7 @@ public class DiscordManagementService : InteractionModuleBase<SocketInteractionC
         logger.LogInformation("ListServers command started");
         try
         {
-            var result = await mediatr.Send(new ListServersQuery(Context.Guild.Id));
+            var result = await mediatr.Send(new ListServersQuery(Context.GetContextEntityId()));
             var menu = CreateSelectMenu(result);
             var builder = new ComponentBuilder().WithSelectMenu(menu);
 
@@ -53,9 +54,9 @@ public class DiscordManagementService : InteractionModuleBase<SocketInteractionC
     {
         try
         {
-            logger.LogInformation("updating active server {ServerId}", Context.Guild.Id);
+            logger.LogInformation("updating active server {EntityId}", Context.GetContextEntityId());
             await DeferAsync();
-            var result = await mediatr.Send(new UpdateActiveServerCommand(Context.Guild.Id, Convert.ToInt32(selectedValues[0])));
+            var result = await mediatr.Send(new UpdateActiveServerCommand(Context.GetContextEntityId(), Convert.ToInt32(selectedValues[0])));
             await Task.FromResult(result);
         }
         catch (Exception ex)

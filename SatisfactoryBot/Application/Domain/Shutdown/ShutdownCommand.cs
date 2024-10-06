@@ -4,5 +4,5 @@ using MediatR;
 
 public class ShutdownCommand : IRequest<bool>
 {
-    public ulong GuildId { get; set; }
+    public ulong EntityId { get; set; }
 }

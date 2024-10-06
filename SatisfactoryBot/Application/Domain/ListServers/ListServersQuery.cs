@@ -6,10 +6,10 @@ using System.Collections.Generic;
 
 internal class ListServersQuery : IRequest<List<SatisfactoryServer>>
 {
-    public ulong GuildId { get; set; }
+    public ulong EntityId { get; set; }
 
-    public ListServersQuery(ulong guildId)
+    public ListServersQuery(ulong entityId)
     {
-        GuildId = guildId;
+        EntityId = entityId;
     }
 }

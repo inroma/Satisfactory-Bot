@@ -15,14 +15,14 @@ public class ApplicationDbContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
-        builder.Entity<DiscordServer>()
+        builder.Entity<DiscordEntity>()
             .HasMany(a => a.SatisfactoryServers)
-            .WithOne(t => t.DiscordServer)
-            .HasForeignKey(a => a.DiscordServerId)
+            .WithOne(t => t.DiscordEntity)
+            .HasForeignKey(a => a.DiscordEntityId)
             .OnDelete(DeleteBehavior.Cascade);
 
         builder.Entity<DiscordRole>()
-            .HasOne(a => a.DiscordServer)
+            .HasOne(a => a.DiscordEntity)
             .WithMany(t => t.DiscordRoles)
             .HasForeignKey(a => a.Id)
             .OnDelete(DeleteBehavior.NoAction);

@@ -13,17 +13,17 @@ namespace SatisfactoryBot.Data.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "DiscordServer",
+                name: "DiscordEntity",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    GuildId = table.Column<decimal>(type: "numeric(20,0)", nullable: false),
+                    EntityId = table.Column<decimal>(type: "numeric(20,0)", nullable: false),
                     CreationTime = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_DiscordServer", x => x.Id);
+                    table.PrimaryKey("PK_DiscordEntity", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -38,9 +38,9 @@ namespace SatisfactoryBot.Data.Migrations
                 {
                     table.PrimaryKey("PK_DiscordRole", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_DiscordRole_DiscordServer_Id",
+                        name: "FK_DiscordRole_DiscordEntity_Id",
                         column: x => x.Id,
-                        principalTable: "DiscordServer",
+                        principalTable: "DiscordEntity",
                         principalColumn: "Id");
                 });
 
@@ -55,24 +55,24 @@ namespace SatisfactoryBot.Data.Migrations
                     Url = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: true),
                     Token = table.Column<string>(type: "text", nullable: true),
                     IsDefaultServer = table.Column<bool>(type: "boolean", nullable: false),
-                    DiscordServerId = table.Column<int>(type: "integer", nullable: false),
+                    DiscordEntityId = table.Column<int>(type: "integer", nullable: false),
                     CreationTime = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_SatisfactoryServer", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_SatisfactoryServer_DiscordServer_DiscordServerId",
-                        column: x => x.DiscordServerId,
-                        principalTable: "DiscordServer",
+                        name: "FK_SatisfactoryServer_DiscordEntity_DiscordEntityId",
+                        column: x => x.DiscordEntityId,
+                        principalTable: "DiscordEntity",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_SatisfactoryServer_DiscordServerId",
+                name: "IX_SatisfactoryServer_DiscordEntityId",
                 table: "SatisfactoryServer",
-                column: "DiscordServerId");
+                column: "DiscordEntityId");
         }
 
         /// <inheritdoc />
@@ -85,7 +85,7 @@ namespace SatisfactoryBot.Data.Migrations
                 name: "SatisfactoryServer");
 
             migrationBuilder.DropTable(
-                name: "DiscordServer");
+                name: "DiscordEntity");
         }
     }
 }

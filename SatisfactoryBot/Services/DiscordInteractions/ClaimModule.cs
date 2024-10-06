@@ -74,7 +74,7 @@ public partial class ClaimModule : InteractionModuleBase<SocketInteractionContex
                 Url = claim.Url,
                 Password = claim.Password,
                 Token = claim.Token,
-                GuildId = Context.Guild.Id,
+                EntityId = Context.GetContextEntityId(),
                 UserId = Context.User.Id,
             });
             await FollowupAsync(result ? "Server claimed successfully !" : "Error claiming the server");

@@ -4,7 +4,7 @@ using MediatR;
 
 public class NewGameCommand : IRequest<bool>
 {
-    public ulong GuildId { get; set; }
+    public ulong EntityId { get; set; }
 
     public string SessionName { get; set; }
 

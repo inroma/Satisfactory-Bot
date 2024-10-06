@@ -5,10 +5,10 @@ using SatisfactoryBot.Models.Dtos;
 
 internal record GetHealthQuery : IRequest<ServerHealthDto>
 {
-    public ulong GuildId { get; set; }
+    public ulong EntityId { get; set; }
 
-    public GetHealthQuery(ulong guildId)
+    public GetHealthQuery(ulong entityId)
     {
-        GuildId = guildId;
+        EntityId = entityId;
     }
 }

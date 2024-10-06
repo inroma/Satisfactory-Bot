@@ -6,10 +6,10 @@ using SatisfactoryBot.Services.Api.Models;
 
 internal class EnumerateSessionsQuery : IRequest<BaseResponse<EnumerateSessionsResponse>>
 {
-    public ulong GuildId { get; set; }
+    public ulong EntityId { get; set; }
 
-    public EnumerateSessionsQuery(ulong guildId)
+    public EnumerateSessionsQuery(ulong entityId)
     {
-        GuildId = guildId;
+        EntityId = entityId;
     }
 }

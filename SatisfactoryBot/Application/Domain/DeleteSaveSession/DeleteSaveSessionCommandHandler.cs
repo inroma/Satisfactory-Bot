@@ -32,7 +32,7 @@ internal class DeleteSaveSessionCommandHandler : IRequestHandler<DeleteSaveSessi
     {
         try
         {
-            var server = discordServerRepository.GetActiveSatisfactoryFromDiscordGuildId(request.GuildId);
+            var server = discordServerRepository.GetActiveSatisfactoryFromDiscordEntityId(request.EntityId);
             client = new SatisfactoryClient(server.Url, server.Token);
             await client.DeleteSessionSave(request.SessionName);
             return true;

@@ -5,10 +5,10 @@ using SatisfactoryBot.Models.Dtos;
 
 internal record GetStateQuery : IRequest<ServerStateDto>
 {
-    public ulong GuildId { get; set; }
+    public ulong EntityId { get; set; }
 
-    public GetStateQuery(ulong guildId)
+    public GetStateQuery(ulong entityId)
     {
-        GuildId = guildId;
+        EntityId = entityId;
     }
 }

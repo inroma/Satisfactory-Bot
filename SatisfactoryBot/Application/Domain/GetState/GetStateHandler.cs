@@ -24,7 +24,7 @@ internal class GetStateHandler : IRequestHandler<GetStateQuery, ServerStateDto>
     public async Task<ServerStateDto> Handle(GetStateQuery request, CancellationToken cancellationToken)
     {
         logger.LogInformation("Retrieving server state");
-        var server = discordRepository.GetActiveSatisfactoryFromDiscordGuildId(request.GuildId);
+        var server = discordRepository.GetActiveSatisfactoryFromDiscordEntityId(request.EntityId);
 
         client = new SatisfactoryClient(server.Url, server.Token);
 

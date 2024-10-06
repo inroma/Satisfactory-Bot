@@ -26,10 +26,9 @@ using SatisfactoryBot.Models.Settings;
 using SatisfactoryBot.Services.DiscordInteractions.Attributes;
 using SatisfactoryBot.Application.Domain.SetAutoLoadSessionName;
 using SatisfactoryBot.Services.Api.Models.Responses;
-using System.Text.Json;
 using System.Threading.Tasks;
 using System.Linq;
-using SatisfactoryBot.Services.Api.Models;
+using SatisfactoryBot.Data.Repositories.Interfaces;
 
 public class SatisfactoryService : InteractionModuleBase<SocketInteractionContext>
 {
@@ -38,16 +37,18 @@ public class SatisfactoryService : InteractionModuleBase<SocketInteractionContex
     private readonly ILogger<SatisfactoryService> logger;
     private readonly ISender mediatr;
     private readonly GlobalSettings globalSettings;
+    private readonly IDiscordServerRepository serverRepository;
 
     #endregion Private Properties
 
     #region Public Constructor
 
-    public SatisfactoryService(ILogger<SatisfactoryService> logger, ISender sender, IOptions<GlobalSettings> options)
+    public SatisfactoryService(ILogger<SatisfactoryService> logger, ISender sender, IOptions<GlobalSettings> options, IDiscordServerRepository repository)
     {
         this.logger = logger;
         mediatr = sender;
         globalSettings = options.Value;
+        serverRepository = repository;
     }
 
     #endregion Public Constructor
@@ -58,7 +59,7 @@ public class SatisfactoryService : InteractionModuleBase<SocketInteractionContex
         logger.LogInformation("GetHealth command started");
         try
         {
-            var result = await mediatr.Send(new GetHealthQuery(Context.Guild.Id));
+            var result = await mediatr.Send(new GetHealthQuery(Context.GetContextEntityId()));
 
             await RespondAsync(embed: ResponseHelper.CreateEmbedHealthCheck(result.HealthResponse, result.ServerName));
         }
@@ -75,7 +76,7 @@ public class SatisfactoryService : InteractionModuleBase<SocketInteractionContex
         logger.LogInformation("ServerState command started");
         try
         {
-            var result = await mediatr.Send(new GetStateQuery(Context.Guild.Id));
+            var result = await mediatr.Send(new GetStateQuery(Context.GetContextEntityId()));
 
             await RespondAsync(embed: ResponseHelper.CreateEmbedServerState(result));
         }
@@ -92,7 +93,7 @@ public class SatisfactoryService : InteractionModuleBase<SocketInteractionContex
         logger.LogInformation("ServerOptions command started");
         try
         {
-            var result = await mediatr.Send(new GetOptionsQuery(Context.Guild.Id));
+            var result = await mediatr.Send(new GetOptionsQuery(Context.GetContextEntityId()));
 
             await RespondAsync(embed: ResponseHelper.CreateEmbedServerOptions(result));
         }
@@ -109,7 +110,7 @@ public class SatisfactoryService : InteractionModuleBase<SocketInteractionContex
         logger.LogInformation("AdvancedGameSettings command started");
         try
         {
-            var result = await mediatr.Send(new GetAdvancedGameSettingsQuery(Context.Guild.Id));
+            var result = await mediatr.Send(new GetAdvancedGameSettingsQuery(Context.GetContextEntityId()));
 
             await RespondAsync(embed: ResponseHelper.CreateEmbedAdvancedSettings(result));
         }
@@ -127,7 +128,7 @@ public class SatisfactoryService : InteractionModuleBase<SocketInteractionContex
         logger.LogInformation("RenameServer command started");
         try
         {
-            var result = await mediatr.Send(new RenameServerCommand(Context.Guild.Id, name));
+            var result = await mediatr.Send(new RenameServerCommand(Context.GetContextEntityId(), name));
 
             await RespondAsync(result ? "Server renamed successfully !" : "Failed to rename Server");
         }
@@ -150,7 +151,7 @@ public class SatisfactoryService : InteractionModuleBase<SocketInteractionContex
             {
                 CommandName = "FG.DisableSeasonalEvents",
                 Value = status,
-                GuildId = Context.Guild.Id
+                EntityId = Context.GetContextEntityId()
             });
             await FollowupAsync(ResponseHelper.GetCommandResponse(result.Data));
         }
@@ -174,7 +175,7 @@ public class SatisfactoryService : InteractionModuleBase<SocketInteractionContex
             {
                 CommandName = "FG.NetworkQuality",
                 Value = networkQuality,
-                GuildId = Context.Guild.Id
+                EntityId = Context.GetContextEntityId()
             });
             await FollowupAsync(ResponseHelper.GetCommandResponse(result.Data));
         }
@@ -194,7 +195,9 @@ public class SatisfactoryService : InteractionModuleBase<SocketInteractionContex
         try
         {
             var buttons = ResponseHelper.CreateConfirmCancelButtons("shutdown", Context.User.Id);
-            await RespondAsync("Use with caution, if your server isn't configured to restart on shutdown, it will stay offline.", components: buttons);
+            var server = serverRepository.GetActiveSatisfactoryFromDiscordEntityId(Context.GetContextEntityId());
+            await RespondAsync("Use with caution, if your server isn't configured to restart on shutdown, it will stay offline.\n" +
+                $"Shutdown \"{server.Name}\" ?", components: buttons);
         }
         catch (Exception ex)
         {
@@ -209,7 +212,7 @@ public class SatisfactoryService : InteractionModuleBase<SocketInteractionContex
         try
         {
             logger.LogInformation("Start shutting down server from User: {User}", Context.User.Id);
-            var result = await mediatr.Send(new ShutdownCommand() { GuildId = Context.Guild.Id });
+            var result = await mediatr.Send(new ShutdownCommand() { EntityId = Context.GetContextEntityId() });
             await (Context.Interaction as SocketMessageComponent).Message.ModifyAsync((a) =>
             {
                 a.Content = result ? "Shutdown initiated" : "Shutdown failed";
@@ -244,7 +247,7 @@ public class SatisfactoryService : InteractionModuleBase<SocketInteractionContex
                 SessionName = sessionName,
                 StartLocation = startLocation,
                 SkipOnboarding = skipOnboarding,
-                GuildId = Context.Guild.Id
+                EntityId = Context.GetContextEntityId()
             });
             await FollowupAsync(result ? "Game created succesfuly! Wait 2 minutes for the session to start." : "Game creation failed 😕");
         }
@@ -268,7 +271,7 @@ public class SatisfactoryService : InteractionModuleBase<SocketInteractionContex
             {
                 CommandName = "server.SaveGame",
                 Value = saveName,
-                GuildId = Context.Guild.Id
+                EntityId = Context.GetContextEntityId()
             });
             await FollowupAsync(ResponseHelper.GetCommandResponse(result.Data));
         }
@@ -290,7 +293,7 @@ public class SatisfactoryService : InteractionModuleBase<SocketInteractionContex
             var result = await mediatr.Send(new DeleteSaveFileCommand()
             {
                 SaveName = fileName,
-                GuildId = Context.Guild.Id
+                EntityId = Context.GetContextEntityId()
             });
             await FollowupAsync(result ? "Save file deleted successfully" : "Failed to delete save file");
         }
@@ -312,7 +315,7 @@ public class SatisfactoryService : InteractionModuleBase<SocketInteractionContex
             var result = await mediatr.Send(new DeleteSaveSessionCommand()
             {
                 SessionName = session,
-                GuildId = Context.Guild.Id
+                EntityId = Context.GetContextEntityId()
             });
             await FollowupAsync(result ? "Session deleted successfully" : "Failed to delete Session");
         }
@@ -334,7 +337,7 @@ public class SatisfactoryService : InteractionModuleBase<SocketInteractionContex
             var result = await mediatr.Send(new SaveGameCommand()
             {
                 SaveName = saveName,
-                GuildId = Context.Guild.Id
+                EntityId = Context.GetContextEntityId()
             });
             await FollowupAsync(result ? "Save file created successfully" : "Failed to create a Save file 😕");
         }
@@ -357,7 +360,7 @@ public class SatisfactoryService : InteractionModuleBase<SocketInteractionContex
             {
                 CommandName = "FG.AutosaveInterval",
                 Value = interval,
-                GuildId = Context.Guild.Id
+                EntityId = Context.GetContextEntityId()
             });
             await FollowupAsync(ResponseHelper.GetCommandResponse(result.Data));
         }
@@ -381,7 +384,7 @@ public class SatisfactoryService : InteractionModuleBase<SocketInteractionContex
         {
             var result = await mediatr.Send(new LoadGameCommand()
             {
-                GuildId = Context.Guild.Id,
+                EntityId = Context.GetContextEntityId(),
                 SaveName = saveName,
                 EnableAdvancedGameSettings = advancedSettings
             });
@@ -410,7 +413,7 @@ public class SatisfactoryService : InteractionModuleBase<SocketInteractionContex
             await DeferAsync();
             var result = await mediatr.Send(new DownloadSaveGameCommand()
             {
-                GuildId = Context.Guild.Id,
+                EntityId = Context.GetContextEntityId(),
                 SaveName = fileName,
             });
             var stream = new MemoryStream();
@@ -449,7 +452,7 @@ public class SatisfactoryService : InteractionModuleBase<SocketInteractionContex
             }
             var result = await mediatr.Send(new UploadSaveGameCommand()
             {
-                GuildId = Context.Guild.Id,
+                EntityId = Context.GetContextEntityId(),
                 SaveName = saveName ?? file.Filename,
                 LoadSaveGame = load,
                 EnableAdvancedGameSettings = advancedSettings,
@@ -472,7 +475,7 @@ public class SatisfactoryService : InteractionModuleBase<SocketInteractionContex
         logger.LogInformation("SetAutoLoadSessionName command started");
         try
         {
-            var result = await mediatr.Send(new EnumerateSessionsQuery(Context.Guild.Id));
+            var result = await mediatr.Send(new EnumerateSessionsQuery(Context.GetContextEntityId()));
             var menu = CreateSelectMenu(result.Data);
             var builder = new ComponentBuilder().WithSelectMenu(menu);
             await RespondAsync("Satisfactory auto-load session", components: builder.Build());
@@ -490,9 +493,9 @@ public class SatisfactoryService : InteractionModuleBase<SocketInteractionContex
     {
         try
         {
-            logger.LogInformation("updating autoload session {ServerId}", Context.Guild.Id);
+            logger.LogInformation("updating autoload session {ServerId}", Context.GetContextEntityId());
             await DeferAsync();
-            var result = await mediatr.Send(new SetAutoLoadSessionNameCommand(Context.Guild.Id, selectedValues[0]));
+            var result = await mediatr.Send(new SetAutoLoadSessionNameCommand(Context.GetContextEntityId(), selectedValues[0]));
             await Task.FromResult(result);
         }
         catch (Exception ex)
@@ -508,7 +511,7 @@ public class SatisfactoryService : InteractionModuleBase<SocketInteractionContex
         try
         {
             await DeferAsync();
-            var result = await mediatr.Send(new EnumerateSessionsQuery(Context.Guild.Id));
+            var result = await mediatr.Send(new EnumerateSessionsQuery(Context.GetContextEntityId()));
             var currentSession = result.Data.Sessions.Where((_, i) => i == result.Data.CurrentSessionIndex).First();
             var menu = ResponseHelper.GetSessionsListSelectMenu(result.Data);
             var embed = ResponseHelper.CreateSessionsSaveDetailsEmbed(currentSession.SaveHeaders);
@@ -529,7 +532,7 @@ public class SatisfactoryService : InteractionModuleBase<SocketInteractionContex
         {
             await DeferAsync();
             var index = int.Parse(selectedValues[0]);
-            var result = await mediatr.Send(new EnumerateSessionsQuery(Context.Guild.Id));
+            var result = await mediatr.Send(new EnumerateSessionsQuery(Context.GetContextEntityId()));
             await UpdateSessionListResponse(result.Data, index);
         }
         catch (Exception ex)
@@ -544,7 +547,7 @@ public class SatisfactoryService : InteractionModuleBase<SocketInteractionContex
         try
         {
             await DeferAsync();
-            var result = await mediatr.Send(new EnumerateSessionsQuery(Context.Guild.Id));
+            var result = await mediatr.Send(new EnumerateSessionsQuery(Context.GetContextEntityId()));
             await UpdateSessionListResponse(result.Data, menuIndex, pageIndex);
         }
         catch (Exception ex)

@@ -5,10 +5,10 @@ using SatisfactoryBot.Models.Dtos;
 
 internal record GetOptionsQuery : IRequest<ServerOptionsDto>
 {
-    public ulong GuildId { get; set; }
+    public ulong EntityId { get; set; }
 
-    public GetOptionsQuery(ulong guildId)
+    public GetOptionsQuery(ulong entityId)
     {
-        GuildId = guildId;
+        EntityId = entityId;
     }
 }

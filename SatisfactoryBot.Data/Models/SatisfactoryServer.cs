@@ -15,7 +15,7 @@ public class SatisfactoryServer : BaseModel
 
     public bool IsDefaultServer { get; set; }
 
-    public int DiscordServerId { get; set; }
+    public int DiscordEntityId { get; set; }
 
-    public virtual DiscordServer DiscordServer { get; set; }
+    public virtual DiscordEntity DiscordEntity { get; set; }
 }

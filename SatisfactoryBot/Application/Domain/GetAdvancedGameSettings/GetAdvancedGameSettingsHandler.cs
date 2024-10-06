@@ -26,7 +26,7 @@ internal class GetAdvancedGameSettingsHandler : IRequestHandler<GetAdvancedGameS
     {
         logger.LogInformation("Retrieving server health");
 
-        var server = discordServerRepository.GetActiveSatisfactoryFromDiscordGuildId(request.GuildId);
+        var server = discordServerRepository.GetActiveSatisfactoryFromDiscordEntityId(request.EntityId);
 
         client = new SatisfactoryClient(server.Url, server.Token);
 

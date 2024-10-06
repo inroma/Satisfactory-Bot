@@ -33,7 +33,7 @@ internal class UploadSaveGameCommandHandler : IRequestHandler<UploadSaveGameComm
     {
         try
         {
-            var server = discordServerRepository.GetActiveSatisfactoryFromDiscordGuildId(request.GuildId);
+            var server = discordServerRepository.GetActiveSatisfactoryFromDiscordEntityId(request.EntityId);
             var discordApiClient = new RestClient();
             var fileData = await discordApiClient.DownloadDataAsync(new RestRequest(request.File.Url), cancellationToken);
             client = new SatisfactoryClient(server.Url, server.Token);

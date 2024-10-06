@@ -39,7 +39,7 @@ internal class UpdateActiveServerHandler : IRequestHandler<UpdateActiveServerCom
     {
         try
         {
-            var servers = discordRepository.GetSatisfactoryServersListFromDiscordGuildId(request.GuildId);
+            var servers = discordRepository.GetSatisfactoryServersListFromDiscordEntityId(request.EntityId);
             servers.Where(s => s.Id != request.NewlyActiveServerId).ToList().ForEach(s =>
             {
                 s.IsDefaultServer = false;

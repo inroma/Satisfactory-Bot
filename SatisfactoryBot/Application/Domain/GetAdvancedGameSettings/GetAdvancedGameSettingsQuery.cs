@@ -5,10 +5,10 @@ using SatisfactoryBot.Models.Dtos;
 
 internal class GetAdvancedGameSettingsQuery : IRequest<ServerAdvancedSettingsDto>
 {
-    public ulong GuildId { get; set; }
+    public ulong EntityId { get; set; }
 
-    public GetAdvancedGameSettingsQuery(ulong guildId)
+    public GetAdvancedGameSettingsQuery(ulong entityId)
     {
-        GuildId = guildId;
+        EntityId = entityId;
     }
 }
