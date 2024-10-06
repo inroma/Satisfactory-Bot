@@ -19,10 +19,18 @@ internal class Program
 {
     static void Main(string[] args)
     {
-        Host.CreateDefaultBuilder(args).ConfigureServices((ctxc, services) => {
+        var host = Host.CreateDefaultBuilder(args).ConfigureServices((ctxc, services) => {
             var configuration = MapSettings(ctxc);
             ConfigureServices(services, configuration);
-        }).Build().Run();
+        }).Build();
+
+        using (var scope = host.Services.CreateScope())
+        {
+            var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+            db.Database.Migrate();
+        }
+
+        host.Run();
     }
 
     private static IServiceCollection ConfigureServices(IServiceCollection services, IConfigurationRoot configuration)

@@ -9,8 +9,6 @@ public class ApplicationDbContext : DbContext
 
     public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
     {
-        // Créer la Db si elle n'existe pas
-        Database.EnsureCreated();
     }
 
     protected override void OnModelCreating(ModelBuilder builder)
