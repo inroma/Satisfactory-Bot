@@ -66,7 +66,7 @@ public class SatisfactoryService : InteractionModuleBase<SocketInteractionContex
         catch (Exception ex)
         {
             logger.LogError(ex, "Error getting server Health: {Ex}", ex.Message);
-            await RespondAsync("Error getting server Health", ephemeral: true);
+            await RespondAsync($"Error getting server Health: {ex.Message}", ephemeral: true);
         }
     }
 
@@ -83,7 +83,7 @@ public class SatisfactoryService : InteractionModuleBase<SocketInteractionContex
         catch (Exception ex)
         {
             logger.LogError(ex, "Error getting server State: {Ex}", ex.Message);
-            await RespondAsync("Error getting server State", ephemeral: true);
+            await RespondAsync($"Error getting server State: {ex.Message}", ephemeral: true);
         }
     }
 
@@ -100,7 +100,7 @@ public class SatisfactoryService : InteractionModuleBase<SocketInteractionContex
         catch (Exception ex)
         {
             logger.LogError(ex, "Error getting server Options: {Ex}", ex.Message);
-            await RespondAsync("Error getting server Options", ephemeral: true);
+            await RespondAsync($"Error getting server Options: {ex.Message}", ephemeral: true);
         }
     }
 
@@ -117,7 +117,7 @@ public class SatisfactoryService : InteractionModuleBase<SocketInteractionContex
         catch (Exception ex)
         {
             logger.LogError(ex, "Error getting advanced game settings: {Ex}", ex.Message);
-            await RespondAsync("Error getting advanced game settings", ephemeral: true);
+            await RespondAsync($"Error getting advanced game settings: {ex.Message}", ephemeral: true);
         }
     }
 
@@ -135,7 +135,7 @@ public class SatisfactoryService : InteractionModuleBase<SocketInteractionContex
         catch (Exception ex)
         {
             logger.LogError(ex, "Error getting advanced game settings: {Ex}", ex.Message);
-            await RespondAsync("Error getting advanced game settings", ephemeral: true);
+            await RespondAsync($"Error getting advanced game settings: {ex.Message}", ephemeral: true);
         }
     }
 
@@ -202,6 +202,7 @@ public class SatisfactoryService : InteractionModuleBase<SocketInteractionContex
         catch (Exception ex)
         {
             logger.LogError(ex, "Error prompting warning for server shutdown: {Ex}", ex.Message);
+            await RespondAsync($"Error shutting down server: {ex.Message}", ephemeral: true);
         }
     }
 
@@ -254,6 +255,7 @@ public class SatisfactoryService : InteractionModuleBase<SocketInteractionContex
         catch (Exception e)
         {
             logger.LogError(e, "Create new game error: {Ex}", e.Message);
+            await RespondAsync($"Error creating new game: {e.Message}", ephemeral: true);
         }
     }
 
@@ -394,7 +396,7 @@ public class SatisfactoryService : InteractionModuleBase<SocketInteractionContex
         catch (Exception ex)
         {
             logger.LogError(ex, "Error loading game: {Ex}", ex.Message);
-            await RespondAsync("Error loading game", ephemeral: true);
+            await RespondAsync($"Error loading game: {ex.Message}", ephemeral: true);
         }
     }
 
@@ -483,7 +485,7 @@ public class SatisfactoryService : InteractionModuleBase<SocketInteractionContex
         catch (Exception ex)
         {
             logger.LogError(ex, "Error setting autoload session: {Ex}", ex.Message);
-            await RespondAsync("Error setting autoload session", ephemeral: true);
+            await RespondAsync($"Error setting autoload session: {ex.Message}", ephemeral: true);
         }
     }
 
@@ -521,7 +523,7 @@ public class SatisfactoryService : InteractionModuleBase<SocketInteractionContex
         catch (Exception ex)
         {
             logger.LogError(ex, "Error getting available save game files: {Ex}", ex.Message);
-            await RespondAsync("Error getting available save game files", ephemeral: true);
+            await RespondAsync($"Error getting available save game files: {ex.Message}", ephemeral: true);
         }
     }
 

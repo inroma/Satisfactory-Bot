@@ -14,11 +14,14 @@ public class DiscordServerRepository : GenericRepository<DiscordEntity>, IDiscor
         this.unitOfWork = unitOfWork;
     }
 
-    public SatisfactoryServer GetActiveSatisfactoryFromDiscordEntityId(ulong entityId) =>
-        unitOfWork.GetRepository<DiscordEntity>().GetAll()
+    public SatisfactoryServer GetActiveSatisfactoryFromDiscordEntityId(ulong entityId)
+    {
+        var server = unitOfWork.GetRepository<DiscordEntity>().GetAll()
             .Where(s => s.EntityId == entityId)
             .SelectMany(d => d.SatisfactoryServers)
             .FirstOrDefault(s => s.IsDefaultServer);
+        return server ?? throw new KeyNotFoundException("No server registered. Use /claim to add one.");
+    }
 
     public List<SatisfactoryServer> GetSatisfactoryServersListFromDiscordEntityId(ulong entityId) =>
         unitOfWork.GetRepository<DiscordEntity>().GetAll()

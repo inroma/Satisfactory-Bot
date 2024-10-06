@@ -40,6 +40,7 @@ public partial class PasswordModule : InteractionModuleBase<SocketInteractionCon
         catch (Exception ex)
         {
             logger.LogError(ex, "error: {Message}", ex.Message);
+            await RespondAsync($"Error updating client password: {ex.Message}", ephemeral: true);
         }
     }
 
@@ -55,6 +56,7 @@ public partial class PasswordModule : InteractionModuleBase<SocketInteractionCon
         catch (Exception ex)
         {
             logger.LogError(ex, "error: {Message}", ex.Message);
+            await RespondAsync($"Error updating admin password: {ex.Message}", ephemeral: true);
         }
     }
 

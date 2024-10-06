@@ -44,7 +44,7 @@ public class DiscordManagementService : InteractionModuleBase<SocketInteractionC
         catch (Exception ex)
         {
             logger.LogError(ex, "Error getting Satisfactory servers: {Ex}", ex.Message);
-            await RespondAsync("Error getting Satisfactory servers", ephemeral: true);
+            await RespondAsync($"Error getting Satisfactory servers: {ex.Message}", ephemeral: true);
         }
     }
 
