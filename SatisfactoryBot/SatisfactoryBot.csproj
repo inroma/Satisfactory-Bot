@@ -1,5 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
-
+﻿<Project Sdk="Microsoft.NET.Sdk;Microsoft.NET.Sdk.Publish">
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>net8.0</TargetFramework>
@@ -7,7 +6,6 @@
     <Nullable>disable</Nullable>
     <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
   </PropertyGroup>
-
   <ItemGroup>
     <PackageReference Include="Discord.Net" Version="3.16.0" />
     <PackageReference Include="MediatR" Version="12.4.1" />
@@ -25,11 +23,9 @@
     <PackageReference Include="NLog.Extensions.Logging" Version="5.3.14" />
     <PackageReference Include="RestSharp" Version="112.0.0" />
   </ItemGroup>
-
   <ItemGroup>
     <ProjectReference Include="..\SatisfactoryBot.Data\SatisfactoryBot.Data.csproj" />
   </ItemGroup>
-
   <ItemGroup>
     <None Update="files\appsettings.Development.json">
       <CopyToPublishDirectory>Never</CopyToPublishDirectory>
@@ -43,5 +39,4 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
-
 </Project>
