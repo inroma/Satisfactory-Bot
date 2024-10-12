@@ -23,10 +23,17 @@ public class DiscordServerRepository : GenericRepository<DiscordEntity>, IDiscor
         return server ?? throw new KeyNotFoundException("No server registered. Use /claim to add one.");
     }
 
-    public List<SatisfactoryServer> GetSatisfactoryServersListFromDiscordEntityId(ulong entityId) =>
-        unitOfWork.GetRepository<DiscordEntity>().GetAll()
+    public List<SatisfactoryServer> GetSatisfactoryServersListFromDiscordEntityId(ulong entityId)
+    {
+        var result = unitOfWork.GetRepository<DiscordEntity>().GetAll()
             .Where(s => s.EntityId == entityId)
             .SelectMany(d => d.SatisfactoryServers).ToList();
+        if (result?.Count == 0)
+        {
+            throw new KeyNotFoundException("No server registered. Use /claim to add one.");
+        }
+        return result;
+    }
 
     public DiscordEntity GetOrCreateDiscordEntity(ulong entityId)
     {
