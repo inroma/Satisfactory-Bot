@@ -4,7 +4,7 @@
 
 Add this [Discord Bot](https://discord.com/oauth2/authorize?client_id=1290768946156273735) to your server.\
 You can use the bot in DM or in a Discord Server.\
-The "/claim" command allows you to add your Server, either with the Token with in-game with command `server.GenerateAPIToken`, or with a password if it is not configured yet.
+The "/claim" command allows you to add your Server, either with the Token obtained with in-game command: `server.GenerateAPIToken`, or with a password if it is not configured yet.
 
 Some commands are restricted to Discord Admin Roles only (future update will add permission management).
 
