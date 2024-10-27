@@ -12,14 +12,15 @@ internal class ResponseHelper
     /// Créer un ensemble de bouton "Confirmer" / "Annuler"
     /// Si un UserId est passé, seul lui pourra confirmer.
     /// </summary>
-    public static MessageComponent CreateConfirmCancelButtons(string initialInteractionId, ulong? userId)
+    public static MessageComponent CreateConfirmCancelButtons(string initialInteractionId, ulong? userId, string additionalContext = null)
     {
         try
         {
             var idCheck = userId != null ? $":{userId}" : "";
+            var param = additionalContext != null ? $"-{additionalContext}" : "";
             var component = new ComponentBuilder()
-                .WithButton("Confirm", initialInteractionId + $"-confirm" + idCheck)
-                .WithButton("Cancel", "delete-interaction", ButtonStyle.Secondary)
+                .WithButton("Confirm", initialInteractionId + $"-confirm" + param + idCheck)
+                .WithButton("Cancel", "delete-interaction" + idCheck, ButtonStyle.Secondary)
                 .Build();
             return component;
         }

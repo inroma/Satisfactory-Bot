@@ -2,11 +2,8 @@
 
 using MediatR;
 using Microsoft.Extensions.Logging;
-using SatisfactoryBot.Data;
 using SatisfactoryBot.Data.Models;
 using SatisfactoryBot.Data.Repositories.Interfaces;
-using SatisfactoryBot.Data.UnitOfWork;
-using SatisfactoryBot.Services.Api.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Threading;
@@ -42,7 +39,7 @@ internal class ListServersHandler : IRequestHandler<ListServersQuery, List<Satis
         catch (Exception ex)
         {
             logger.LogError(ex, "Error retrieving Discord's Satisfactory servers. {Ex}", ex.Message);
+            throw;
         }
-        return null;
     }
 }

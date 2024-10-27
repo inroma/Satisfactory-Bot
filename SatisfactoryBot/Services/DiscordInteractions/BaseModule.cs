@@ -24,7 +24,7 @@ public class BaseModule : InteractionModuleBase<SocketInteractionContext>
 
     #region Public Methods
 
-    [ComponentInteraction("delete-interaction")]
+    [ComponentInteraction("delete-interaction:*")]
     [DoUserCheck]
     public async Task DeleteInteraction()
     {
