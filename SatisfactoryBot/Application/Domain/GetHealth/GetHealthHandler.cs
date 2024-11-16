@@ -5,8 +5,6 @@ using Microsoft.Extensions.Logging;
 using SatisfactoryBot.Data.Repositories.Interfaces;
 using SatisfactoryBot.Models.Dtos;
 using SatisfactoryBot.Services.Api;
-using SatisfactoryBot.Services.Api.Models;
-using SatisfactoryBot.Services.Api.Models.Responses;
 using System.Threading;
 using System.Threading.Tasks;
 

@@ -26,16 +26,14 @@ public class UnitOfWork<TContext> : IUnitOfWork<TContext> where TContext : DbCon
 
     public IGenericRepository<TEntity> GetRepository<TEntity>() where TEntity : BaseModel
     {
-        if (_repositories == null)
-        {
-            _repositories = new Dictionary<Type, object>();
-        }
+        _repositories ??= [];
         var type = typeof(TEntity);
-        if (!_repositories.ContainsKey(type))
+        if (!_repositories.TryGetValue(type, out object repo))
         {
-            _repositories[type] = new GenericRepository<TEntity>(_context);
+            repo = new GenericRepository<TEntity>(_context);
+            _repositories[type] = repo;
         }
-        return (IGenericRepository<TEntity>)_repositories[type];
+        return (IGenericRepository<TEntity>)repo;
     }
 
     public int ExecuteSqlCommand(
