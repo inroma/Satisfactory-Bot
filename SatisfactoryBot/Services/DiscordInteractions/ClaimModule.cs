@@ -82,7 +82,7 @@ public partial class ClaimModule : InteractionModuleBase<SocketInteractionContex
         catch (Exception e)
         {
             logger.LogError(e, "Error during claim: {ExMessage}", e.Message);
-            await FollowupAsync($"Error during claim: {e.Message}");
+            await FollowupAsync($"Error during claim: {e.InnerException?.Message ?? e.Message}");
         }
     }
 }

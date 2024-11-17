@@ -59,6 +59,7 @@ public class SatisfactoryService : InteractionModuleBase<SocketInteractionContex
         logger.LogInformation("GetHealth command started");
         try
         {
+            await DeferAsync();
             var result = await mediatr.Send(new GetHealthQuery(Context.GetContextEntityId()));
 
             await RespondAsync(embed: ResponseHelper.CreateEmbedHealthCheck(result.HealthResponse, result.ServerName));
@@ -66,7 +67,7 @@ public class SatisfactoryService : InteractionModuleBase<SocketInteractionContex
         catch (Exception ex)
         {
             logger.LogError(ex, "Error getting server Health: {Ex}", ex.Message);
-            await RespondAsync($"Error getting server Health: {ex.Message}", ephemeral: true);
+            await FollowupAsync($"Error getting server Health: {ex.InnerException?.Message ?? ex.Message}");
         }
     }
 
@@ -76,6 +77,7 @@ public class SatisfactoryService : InteractionModuleBase<SocketInteractionContex
         logger.LogInformation("ServerState command started");
         try
         {
+            await DeferAsync();
             var result = await mediatr.Send(new GetStateQuery(Context.GetContextEntityId()));
 
             await RespondAsync(embed: ResponseHelper.CreateEmbedServerState(result));
@@ -83,7 +85,7 @@ public class SatisfactoryService : InteractionModuleBase<SocketInteractionContex
         catch (Exception ex)
         {
             logger.LogError(ex, "Error getting server State: {Ex}", ex.Message);
-            await RespondAsync($"Error getting server State: {ex.Message}", ephemeral: true);
+            await FollowupAsync($"Error getting server State: {ex.InnerException?.Message ?? ex.Message}");
         }
     }
 
@@ -93,6 +95,7 @@ public class SatisfactoryService : InteractionModuleBase<SocketInteractionContex
         logger.LogInformation("ServerOptions command started");
         try
         {
+            await DeferAsync();
             var result = await mediatr.Send(new GetOptionsQuery(Context.GetContextEntityId()));
 
             await RespondAsync(embed: ResponseHelper.CreateEmbedServerOptions(result));
@@ -100,7 +103,7 @@ public class SatisfactoryService : InteractionModuleBase<SocketInteractionContex
         catch (Exception ex)
         {
             logger.LogError(ex, "Error getting server Options: {Ex}", ex.Message);
-            await RespondAsync($"Error getting server Options: {ex.Message}", ephemeral: true);
+            await FollowupAsync($"Error getting server Options: {ex.InnerException?.Message ?? ex.Message}");
         }
     }
 
@@ -110,6 +113,7 @@ public class SatisfactoryService : InteractionModuleBase<SocketInteractionContex
         logger.LogInformation("AdvancedGameSettings command started");
         try
         {
+            await DeferAsync();
             var result = await mediatr.Send(new GetAdvancedGameSettingsQuery(Context.GetContextEntityId()));
 
             await RespondAsync(embed: ResponseHelper.CreateEmbedAdvancedSettings(result));
@@ -117,7 +121,7 @@ public class SatisfactoryService : InteractionModuleBase<SocketInteractionContex
         catch (Exception ex)
         {
             logger.LogError(ex, "Error getting advanced game settings: {Ex}", ex.Message);
-            await RespondAsync($"Error getting advanced game settings: {ex.Message}", ephemeral: true);
+            await FollowupAsync($"Error getting advanced game settings: {ex.InnerException?.Message ?? ex.Message}");
         }
     }
 
@@ -128,6 +132,7 @@ public class SatisfactoryService : InteractionModuleBase<SocketInteractionContex
         logger.LogInformation("RenameServer command started");
         try
         {
+            await DeferAsync();
             var result = await mediatr.Send(new RenameServerCommand(Context.GetContextEntityId(), name));
 
             await RespondAsync(result ? "Server renamed successfully !" : "Failed to rename Server");
@@ -135,7 +140,7 @@ public class SatisfactoryService : InteractionModuleBase<SocketInteractionContex
         catch (Exception ex)
         {
             logger.LogError(ex, "Error getting advanced game settings: {Ex}", ex.Message);
-            await RespondAsync($"Error getting advanced game settings: {ex.Message}", ephemeral: true);
+            await FollowupAsync($"Error getting advanced game settings: {ex.InnerException?.Message ?? ex.Message}");
         }
     }
 
@@ -158,7 +163,7 @@ public class SatisfactoryService : InteractionModuleBase<SocketInteractionContex
         catch (Exception ex)
         {
             logger.LogError(ex, "Error updating in-game event: {Ex}", ex.Message);
-            await FollowupAsync($"Error updating in-game event: {ex.Message}");
+            await FollowupAsync($"Error updating in-game event: {ex.InnerException?.Message ?? ex.Message}");
         }
     }
 
@@ -182,7 +187,7 @@ public class SatisfactoryService : InteractionModuleBase<SocketInteractionContex
         catch (Exception ex)
         {
             logger.LogError(ex, "Error updating Network Quality: {Ex}", ex.Message);
-            await FollowupAsync($"Error updating Network Quality: {ex.Message}");
+            await FollowupAsync($"Error updating Network Quality: {ex.InnerException?.Message ?? ex.Message}");
         }
     }
 
@@ -255,7 +260,7 @@ public class SatisfactoryService : InteractionModuleBase<SocketInteractionContex
         catch (Exception e)
         {
             logger.LogError(e, "Create new game error: {Ex}", e.Message);
-            await RespondAsync($"Error creating new game: {e.Message}", ephemeral: true);
+            await FollowupAsync($"Error creating new game: {e.InnerException?.Message ?? e.Message}");
         }
     }
 
@@ -280,7 +285,7 @@ public class SatisfactoryService : InteractionModuleBase<SocketInteractionContex
         catch (Exception ex)
         {
             logger.LogError(ex, "Error executing server command server.SaveGame: {Ex}", ex.Message);
-            await FollowupAsync($"Error executing server command server.SaveGame: {ex.Message}");
+            await FollowupAsync($"Error executing server command server.SaveGame: {ex.InnerException?.Message ?? ex.Message}");
         }
     }
 
@@ -302,7 +307,7 @@ public class SatisfactoryService : InteractionModuleBase<SocketInteractionContex
         catch (Exception ex)
         {
             logger.LogError(ex, "Error deleting save file: {Ex}", ex.Message);
-            await FollowupAsync($"Error deleting save file: {ex.Message}");
+            await FollowupAsync($"Error deleting save file: {ex.InnerException?.Message ?? ex.Message}");
         }
     }
 
@@ -324,7 +329,7 @@ public class SatisfactoryService : InteractionModuleBase<SocketInteractionContex
         catch (Exception ex)
         {
             logger.LogError(ex, "Error deleting session: {Ex}", ex.Message);
-            await FollowupAsync($"Error deleting session: {ex.Message}");
+            await FollowupAsync($"Error deleting session: {ex.InnerException?.Message ?? ex.Message}");
         }
     }
 
@@ -346,7 +351,7 @@ public class SatisfactoryService : InteractionModuleBase<SocketInteractionContex
         catch (Exception ex)
         {
             logger.LogError(ex, "Error creating new save: {Ex}", ex.Message);
-            await FollowupAsync($"Error: {ex.Message}");
+            await FollowupAsync($"Error: {ex.InnerException?.Message ?? ex.Message}");
         }
     }
 
@@ -369,7 +374,7 @@ public class SatisfactoryService : InteractionModuleBase<SocketInteractionContex
         catch (Exception ex)
         {
             logger.LogError(ex, "Error updating Auto-save setting: {Ex}", ex.Message);
-            await FollowupAsync($"Error updating Auto-save setting: {ex.Message}");
+            await FollowupAsync($"Error updating Auto-save setting: {ex.InnerException?.Message ?? ex.Message}");
         }
     }
 
@@ -382,6 +387,7 @@ public class SatisfactoryService : InteractionModuleBase<SocketInteractionContex
         [Summary(description: "True if save game file should be loaded with Advanced Game Settings enabled")] bool advancedSettings = false)
     {
         logger.LogInformation("Start loading game from User: {User}", Context.User.Id);
+        await DeferAsync();
         try
         {
             var result = await mediatr.Send(new LoadGameCommand()
@@ -396,7 +402,7 @@ public class SatisfactoryService : InteractionModuleBase<SocketInteractionContex
         catch (Exception ex)
         {
             logger.LogError(ex, "Error loading game: {Ex}", ex.Message);
-            await RespondAsync($"Error loading game: {ex.Message}", ephemeral: true);
+            await FollowupAsync($"Error loading game: {ex.Message}", ephemeral: true);
         }
     }
 
@@ -426,7 +432,7 @@ public class SatisfactoryService : InteractionModuleBase<SocketInteractionContex
         catch (Exception ex)
         {
             logger.LogError(ex, "Error downloading save: {Ex}", ex.Message);
-            await FollowupAsync($"Error downloading save: {ex.Message}");
+            await FollowupAsync($"Error downloading save: {ex.InnerException?.Message ?? ex.Message}");
         }
     }
 
@@ -466,7 +472,7 @@ public class SatisfactoryService : InteractionModuleBase<SocketInteractionContex
         catch (Exception ex)
         {
             logger.LogError(ex, "Error uploading save: {Ex}", ex.Message);
-            await FollowupAsync($"Error uploading save: {ex.Message}");
+            await FollowupAsync($"Error uploading save: {ex.InnerException?.Message ?? ex.Message}");
         }
     }
 
@@ -477,6 +483,7 @@ public class SatisfactoryService : InteractionModuleBase<SocketInteractionContex
         logger.LogInformation("SetAutoLoadSessionName command started");
         try
         {
+            await DeferAsync();
             var result = await mediatr.Send(new EnumerateSessionsQuery(Context.GetContextEntityId()));
             var menu = CreateSelectMenu(result.Data);
             var builder = new ComponentBuilder().WithSelectMenu(menu);
@@ -485,7 +492,7 @@ public class SatisfactoryService : InteractionModuleBase<SocketInteractionContex
         catch (Exception ex)
         {
             logger.LogError(ex, "Error setting autoload session: {Ex}", ex.Message);
-            await RespondAsync($"Error setting autoload session: {ex.Message}", ephemeral: true);
+            await FollowupAsync($"Error setting autoload session: {ex.InnerException?.Message ?? ex.Message}");
         }
     }
 
@@ -523,7 +530,7 @@ public class SatisfactoryService : InteractionModuleBase<SocketInteractionContex
         catch (Exception ex)
         {
             logger.LogError(ex, "Error getting available save game files: {Ex}", ex.Message);
-            await RespondAsync($"Error getting available save game files: {ex.Message}", ephemeral: true);
+            await FollowupAsync($"Error getting available save game files: {ex.InnerException?.Message ?? ex.Message}");
         }
     }
 
