@@ -62,7 +62,7 @@ public class SatisfactoryService : InteractionModuleBase<SocketInteractionContex
             await DeferAsync();
             var result = await mediatr.Send(new GetHealthQuery(Context.GetContextEntityId()));
 
-            await RespondAsync(embed: ResponseHelper.CreateEmbedHealthCheck(result.HealthResponse, result.ServerName));
+            await FollowupAsync(embed: ResponseHelper.CreateEmbedHealthCheck(result.HealthResponse, result.ServerName));
         }
         catch (Exception ex)
         {
@@ -80,7 +80,7 @@ public class SatisfactoryService : InteractionModuleBase<SocketInteractionContex
             await DeferAsync();
             var result = await mediatr.Send(new GetStateQuery(Context.GetContextEntityId()));
 
-            await RespondAsync(embed: ResponseHelper.CreateEmbedServerState(result));
+            await FollowupAsync(embed: ResponseHelper.CreateEmbedServerState(result));
         }
         catch (Exception ex)
         {
@@ -98,7 +98,7 @@ public class SatisfactoryService : InteractionModuleBase<SocketInteractionContex
             await DeferAsync();
             var result = await mediatr.Send(new GetOptionsQuery(Context.GetContextEntityId()));
 
-            await RespondAsync(embed: ResponseHelper.CreateEmbedServerOptions(result));
+            await FollowupAsync(embed: ResponseHelper.CreateEmbedServerOptions(result));
         }
         catch (Exception ex)
         {
@@ -116,7 +116,7 @@ public class SatisfactoryService : InteractionModuleBase<SocketInteractionContex
             await DeferAsync();
             var result = await mediatr.Send(new GetAdvancedGameSettingsQuery(Context.GetContextEntityId()));
 
-            await RespondAsync(embed: ResponseHelper.CreateEmbedAdvancedSettings(result));
+            await FollowupAsync(embed: ResponseHelper.CreateEmbedAdvancedSettings(result));
         }
         catch (Exception ex)
         {
@@ -135,7 +135,7 @@ public class SatisfactoryService : InteractionModuleBase<SocketInteractionContex
             await DeferAsync();
             var result = await mediatr.Send(new RenameServerCommand(Context.GetContextEntityId(), name));
 
-            await RespondAsync(result ? "Server renamed successfully !" : "Failed to rename Server");
+            await FollowupAsync(result ? "Server renamed successfully !" : "Failed to rename Server");
         }
         catch (Exception ex)
         {
@@ -397,7 +397,7 @@ public class SatisfactoryService : InteractionModuleBase<SocketInteractionContex
                 EnableAdvancedGameSettings = advancedSettings
             });
 
-            await RespondAsync(result ? "Game loaded successfully !" : "Failed to load specified Game");
+            await FollowupAsync(result ? "Game loaded successfully !" : "Failed to load specified Game");
         }
         catch (Exception ex)
         {
@@ -487,7 +487,7 @@ public class SatisfactoryService : InteractionModuleBase<SocketInteractionContex
             var result = await mediatr.Send(new EnumerateSessionsQuery(Context.GetContextEntityId()));
             var menu = CreateSelectMenu(result.Data);
             var builder = new ComponentBuilder().WithSelectMenu(menu);
-            await RespondAsync("Satisfactory auto-load session", components: builder.Build());
+            await FollowupAsync("Satisfactory auto-load session", components: builder.Build());
         }
         catch (Exception ex)
         {
