@@ -13,6 +13,8 @@ using SatisfactoryBot.Services.Api.Models.Misc;
 using SatisfactoryBot.Data.Repositories.Interfaces;
 using Microsoft.Extensions.Logging;
 using System.Net;
+using SatisfactoryBot.Helpers;
+using SatisfactoryBot.Constants;
 
 public class ClaimSatisfactoryServerHandler : IRequestHandler<ClaimSatisfactoryServerCommand, bool>
 {
@@ -41,16 +43,17 @@ public class ClaimSatisfactoryServerHandler : IRequestHandler<ClaimSatisfactoryS
     {
         try
         {
+            var url = HandleUrlPort(request.Url);
             if (string.IsNullOrEmpty(request.Token) && !string.IsNullOrEmpty(request.Password))
             {
-                var token = (await PasswordLessLogin(request.Url, ApiPrivilegeLevel.InitialAdmin)).AuthenticationToken;
-                request.Token = (await ClaimServer(request.Url, token, request.ServerName, request.Password)).AuthenticationToken;
+                var token = (await PasswordLessLogin(url, ApiPrivilegeLevel.InitialAdmin)).AuthenticationToken;
+                request.Token = (await ClaimServer(url, token, request.ServerName, request.Password)).AuthenticationToken;
             }
             else if (!string.IsNullOrEmpty(request.Token))
             {
-                await TokenAuthToSatisfactoryServer(request.Url, request.Token);
+                await TokenAuthToSatisfactoryServer(url, request.Token);
                 // if adding server with token, we retrieve the server name via Udp
-                var ip = GetRemoteAddressFromUrl(request.Url);
+                var ip = GetRemoteAddressFromUrl(url);
                 request.ServerName = await client.GetServerNameWithUdp(ip);
             }
             if (request.Token != null)
@@ -68,7 +71,7 @@ public class ClaimSatisfactoryServerHandler : IRequestHandler<ClaimSatisfactoryS
                 {
                     Owner = request.UserId,
                     Token = request.Token,
-                    Url = request.Url,
+                    Url = url,
                     Name = request.ServerName,
                     DiscordEntity = discordServer,
                     IsDefaultServer = isDefault,
@@ -114,23 +117,30 @@ public class ClaimSatisfactoryServerHandler : IRequestHandler<ClaimSatisfactoryS
         }
     }
 
-    private async Task<StateResponse> QueryServerState(string url, string token)
-    {
-        try
-        {
-            client = new SatisfactoryClient(url, token);
-            var result = await client.GetState();
-            return result.Data;
-        }
-        catch
-        {
-            throw;
-        }
-    }
-
     private static IPEndPoint GetRemoteAddressFromUrl(string url)
     {
         var myUri = new Uri(url);
         return new(Dns.GetHostAddresses(myUri.Host)[0], myUri.Port);
+    }
+
+    /// <summary>
+    /// Reformate l'Url pour être viable
+    /// </summary>
+    /// <param name="url"></param>
+    private static string HandleUrlPort(string url)
+    {
+        if (!RegexHelper.UrlEndingWithPort().IsMatch(url))
+        {
+            if (!url.StartsWith("https://"))
+            {
+                url = "https://" + url;
+            }
+            if (url.EndsWith('/'))
+            {
+                url = url[..^1];
+            }
+            url += $":{SatisfactoryConstants.SatisfactoryPort}";
+        }
+        return url;
     }
 }
