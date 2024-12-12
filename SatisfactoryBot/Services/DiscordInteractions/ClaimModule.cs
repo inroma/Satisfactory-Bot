@@ -65,6 +65,11 @@ public partial class ClaimModule : InteractionModuleBase<SocketInteractionContex
             await RespondAsync("Server address cannot be a local IP, you can enable it in the bot config file");
             return;
         }
+        else if (!RegexHelper.IsValidAddress().IsMatch(claim.Url))
+        {
+            await RespondAsync("Unsupported server address.");
+            return;
+        }
         try
         {
             await DeferAsync();
